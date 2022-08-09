@@ -30,7 +30,7 @@ featured_image: '/images/involuntary-landscapes/involuntary-landscapes-19.jpg'
 	<img src="/images/involuntary-landscapes/involuntary-landscapes-22.jpg">
 </div>
 ---
-<i>Involuntary Landscapes</i> interprets my attempts to piece together a historical and cultural consciousness lost when my family emigrated from Portugal and settled in California. The children of migrants, like myself, are often expected to function in two cultures without their parents’ memories and birth connection to their home countries and without much guidance in adapting to a new country and culture. Instead, they often piece together knowledge about both cultures from stories, media, travel and by basic trial and error.
+*Involuntary Landscapes* interprets my attempts to piece together a historical and cultural consciousness lost when my family emigrated from Portugal and settled in California. The children of migrants, like myself, are often expected to function in two cultures without their parents’ memories and birth connection to their home countries and without much guidance in adapting to a new country and culture. Instead, they often piece together knowledge about both cultures from stories, media, travel and by basic trial and error.
 
 Reflecting this phenomenon, the photos of an anonymous family in pre-revolutionary Portugal recall the characters and settings of my own family's stories and evoke recollections of the past without conscious effort--involuntary memories. I juxtapose these with deliberately crafted landscape photos from my travels in the California chaparral and the Portuguese montado. In so doing, the present and past serve as lenses through which the other is interpreted. 
 
