@@ -1,6 +1,6 @@
 basic_settings:
-  site_title: HuGo TeiXeira
-  site_tagline: Selected Works
+  site_title: HGTX Studio
+  site_tagline: Artwork by Hugo Teixeira
   favicon_image: /images/favicon.png
 
 header_settings:
@@ -73,8 +73,8 @@ color_settings:
 
 font_settings:
  #font_embed: '<link href="https://fonts.googleapis.com/css?family=Montserrat:300,500" rel="stylesheet">'
-  title_font: '"Courier", serif'
-  body_font: '"Courier", serif'
+  title_font: '"Arial", sans-serif'
+  body_font: '"Arial", sans-serif'
   regular_weight: 300
   bold_weight: 500
   site_title:
