@@ -1,6 +1,6 @@
 basic_settings:
   site_title: HGTX Studio
-  site_tagline: Artwork by HuGo TeiXeira
+  site_tagline: Artwork by Hugo Teixeira
   favicon_image: /images/favicon.png
 
 header_settings:
@@ -75,100 +75,100 @@ font_settings:
 
   font_embed: '<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Encode+Sans+SC:wght@100;200;300;400;500;600;700;800;900&family=Encode+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">' 
-  title_font: '"Encode Sans SC", sans-serif'
-  body_font: '"Encode Sans", sans-serif'
-  regular_weight: 300
-  bold_weight: 500
+<link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet"> '
+  title_font: '"Amatic SC", cursive'
+  body_font: '"Amatic SC", cursive'
+  regular_weight: 400
+  bold_weight: 700
   site_title:
-    small_size: 25
-    medium_size: 35
-    large_size: 45
-    weight: 500
-    letter_spacing: -.02
+    small_size: 25*1.5
+    medium_size: 35*1.5
+    large_size: 45*1.5
+    weight: 700
+    letter_spacing: -0.02
   site_tagline:
-    small_size: 16
-    medium_size: 18
-    large_size: 20
-    weight: 500
+    small_size: 16*1.5
+    medium_size: 18*1.5
+    large_size: 20*1.5
+    weight: 400
     letter_spacing: 0
     line_height: 1.5
   menu:
-    small_size: 30
-    medium_size: 15
-    large_size: 16
-    weight: 500
+    small_size: 30*1.5
+    medium_size: 15*1.5
+    large_size: 16*1.5
+    weight: 700
     letter_spacing: 0
   grid_item_title:
-    small_size: 22
-    medium_size: 26
-    large_size: 30
-    weight: 500
+    small_size: 22*1.5
+    medium_size: 26*1.5
+    large_size: 30*1.5
+    weight: 700
     letter_spacing: -0.02
   grid_item_subtitle:
-    small_size: 15
-    medium_size: 16
-    large_size: 17
-    weight: 300
+    small_size: 15*1.5
+    medium_size: 16*1.5
+    large_size: 17*1.5
+    weight: 400
     letter_spacing: 0
   h1:
-    small_size: 25
-    medium_size: 35
-    large_size: 45
-    weight: 500
+    small_size: 25*1.5
+    medium_size: 35*1.5
+    large_size: 45*1.5
+    weight: 700
     letter_spacing: -0.02
     line_height: 1.2
   h2:
-    small_size: 22
-    medium_size: 30
-    large_size: 35
-    weight: 500
+    small_size: 22*1.5
+    medium_size: 30*1.5
+    large_size: 35*1.5
+    weight: 700
     letter_spacing: -0.02
     line_height: 1.2
   h3:
-    small_size: 22
-    medium_size: 25
-    large_size: 30
-    weight: 500
+    small_size: 22*1.5
+    medium_size: 25*1.5
+    large_size: 30*1.5
+    weight: 700
     letter_spacing: -0.02
     line_height: 1.3
   h4:
-    small_size: 17
-    medium_size: 22
-    large_size: 22
-    weight: 500
+    small_size: 17*1.5
+    medium_size: 22*1.5
+    large_size: 22*1.5
+    weight: 700
     letter_spacing: 0
     line_height: 1.6
   h5:
-    small_size: 17
-    medium_size: 20
-    large_size: 20
-    weight: 500
+    small_size: 17*1.5
+    medium_size: 20*1.5
+    large_size: 20*1.5
+    weight: 700
     letter_spacing: 0
     line_height: 1.6
   h6:
-    small_size: 17
-    medium_size: 20
-    large_size: 20
-    weight: 500
+    small_size: 17*1.5
+    medium_size: 20*1.5
+    large_size: 20*1.5
+    weight: 700
     letter_spacing: 0
     line_height: 1.6
   p:
-    small_size: 16
-    medium_size: 18
-    large_size: 20
+    small_size: 16*1.5
+    medium_size: 18*1.5
+    large_size: 20*1.5
     weight: 400
     letter_spacing: 0
     line_height: 1.6
   blockquote:
-    small_size: 25
-    medium_size: 35
-    large_size: 45
-    weight: 300
+    small_size: 25*1.5
+    medium_size: 35*1.5
+    large_size: 45*1.5
+    weight: 400
     letter_spacing: -0.02
     line_height: 1.6
   buttons:
-    weight: 500
+    weight: 700
     letter_spacing: 0
 
 advanced_settings:

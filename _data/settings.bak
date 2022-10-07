@@ -1,6 +1,6 @@
 basic_settings:
   site_title: HGTX Studio
-  site_tagline: Artwork by HuGo TeiXeira
+  site_tagline: Artwork by Hugo Teixeira
   favicon_image: /images/favicon.png
 
 header_settings:
@@ -73,11 +73,9 @@ color_settings:
 
 font_settings:
 
-  font_embed: '<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Encode+Sans+SC:wght@100;200;300;400;500;600;700;800;900&family=Encode+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">' 
-  title_font: '"Encode Sans SC", sans-serif'
-  body_font: '"Encode Sans", sans-serif'
+  font_embed: '<link href="https://fonts.googleapis.com/css?family=Montserrat:300,500" rel="stylesheet">'
+  title_font: '"Montserrat", sans-serif'
+  body_font: '"Montserrat", sans-serif'
   regular_weight: 300
   bold_weight: 500
   site_title:
@@ -85,12 +83,12 @@ font_settings:
     medium_size: 35
     large_size: 45
     weight: 500
-    letter_spacing: -.02
+    letter_spacing: -0.02
   site_tagline:
     small_size: 16
     medium_size: 18
     large_size: 20
-    weight: 500
+    weight: 300
     letter_spacing: 0
     line_height: 1.5
   menu:
@@ -157,7 +155,7 @@ font_settings:
     small_size: 16
     medium_size: 18
     large_size: 20
-    weight: 400
+    weight: 300
     letter_spacing: 0
     line_height: 1.6
   blockquote:
