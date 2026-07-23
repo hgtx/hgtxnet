@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'jekyll', '3.9'
+gem 'jekyll', '3.9.4'
 gem 'jekyll-email-protect'
 gem 'kramdown-parser-gfm'
 
