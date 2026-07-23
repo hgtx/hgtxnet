@@ -1,5 +1,6 @@
 basic_settings:
   site_title: HGTX Studio
+  copyright_name: Hugo Teixeira
   site_tagline: Artwork by HuGo TeiXeira
   favicon_image: /images/favicon.png
 

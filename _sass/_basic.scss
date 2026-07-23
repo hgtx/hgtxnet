@@ -4,9 +4,6 @@
 
 // - - - - - - - - - - - - - - - - - -
 
-@use "sass:color";
-
-
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Basics
 
 html, body {
@@ -203,7 +200,7 @@ a {
 	@include transition(all 0.15s ease-in-out);
 
 	&:hover {
-		color: $accent-color;
+		color: $text-medium-color;
 	}
 }
 
@@ -225,8 +222,8 @@ a {
 	}
 
 	&:hover {
-		background: color.adjust($accent-color, $hue: 15deg);
-		border-color: color.adjust($accent-color, $hue: 15deg);
+		background: $text-dark-color;
+		border-color: $text-dark-color;
 		color: $background-color;
 	}
 
@@ -265,8 +262,8 @@ a {
 	color: $text-dark-color;
 
 	&:hover {
-		background: $accent-color;
-		border-color: $accent-color;
+		background: $text-dark-color;
+		border-color: $text-dark-color;
 		color: $background-color;
 	}
 }
@@ -277,9 +274,9 @@ a {
 	color: $overlay-text-color;
 
 	&:hover {
-		background: $overlay-text-color;
-		border-color: $overlay-text-color;
-		color: $accent-color;
+		background: $text-dark-color;
+		border-color: $text-dark-color;
+		color: $background-color;
 	}
 }
 

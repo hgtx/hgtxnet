@@ -64,7 +64,7 @@
 	white-space: nowrap;
 
 	&:hover {
-		color: $accent-color;
+		color: $text-medium-color;
 	}
 
 	@include mq(tabletp) {
@@ -235,7 +235,7 @@
 	padding: 10px 0;
 
 	&:hover {
-		color: $overlay-accent-color;
+		color: $text-light-color;
 	}
 
 	@include mq(tabletl) {
@@ -244,7 +244,7 @@
 		color: $text-dark-color;
 
 		&:hover {
-			color: $accent-color;
+			color: $text-medium-color;
 		}
 	}
 
@@ -312,10 +312,16 @@
 		position: absolute;
 		bottom: 30px;
 		left: 40px;
+		right: 40px;
 	}
 
 	@include mq(laptop) {
 		bottom: 40px;
 		left: 60px;
+		right: 60px;
+	}
+
+	.footer__copyright {
+		text-align: center;
 	}
 }
