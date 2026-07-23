@@ -193,6 +193,8 @@
 	background: rgba(245, 247, 250, 0.88);
 	background: rgba(var(--cover-tint-rgb, 245, 247, 250), 0.88);
 	overflow: auto;
+	display: flex;
+	flex-direction: column;
 
 	visibility: hidden;
 	opacity: 1;
@@ -200,6 +202,7 @@
 
 	@include mq(tabletl) {
 		position: relative;
+		display: block;
 		background: transparent;
 		visibility: visible;
 		overflow: visible;
@@ -216,10 +219,10 @@
 .menu__list {
 	list-style: none;
 	margin: 0 auto;
-	padding: 12px 20px;
+	padding: 25vh 20px 12px;
 
 	@include mq(tabletp) {
-		padding: 30px 40px;
+		padding: 25vh 40px 30px;
 	}
 
 	@include mq(tabletl) {
