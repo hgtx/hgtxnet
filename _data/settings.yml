@@ -22,9 +22,10 @@ menu_settings:
       url: '/contact'
 
 cover_settings:
-  image: /images/chaparral/chaparral-11.jpg
+  image: /images/cover/cover-01.jpg
   alt: HGTX Studio
-  project: chaparral
+  folder: cover
+  count: 44
 
 grid_settings:
   overlay_opacity: .82
