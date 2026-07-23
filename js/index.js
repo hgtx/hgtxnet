@@ -18,6 +18,61 @@
 	var navSourcePath = null;
 	var docTitle = document.title;
 	var History = window.History;
+	var loadingFallbackTimer = null;
+
+	function getSafePageTitle() {
+		return docTitle || document.title || '';
+	}
+
+	function pushPageState(url) {
+		History.pushState(null, getSafePageTitle(), url);
+	}
+
+	function getAjaxPageLoadUrl() {
+		return window.location.pathname;
+	}
+
+	function extractPageContentFromHtml(html) {
+		var $parsed = $('<div>').append($.parseHTML(html, document, true));
+
+		return $parsed.find('.page__content').first();
+	}
+
+	function clearLoadingFallbackTimer() {
+		if ( loadingFallbackTimer ) {
+			window.clearTimeout(loadingFallbackTimer);
+			loadingFallbackTimer = null;
+		}
+	}
+
+	function scheduleLoadingFallback() {
+		clearLoadingFallbackTimer();
+
+		loadingFallbackTimer = window.setTimeout(function() {
+			loadingFallbackTimer = null;
+			$('body').removeClass('loading menu--open sidebar-exit-animating sidebar-exit-active');
+		}, 12000);
+	}
+
+	function loadAjaxPageContent(loadUrl, $loader, callback) {
+		$.ajax({
+			url: loadUrl,
+			dataType: 'html',
+			cache: true
+		}).done(function(html) {
+			var $content = extractPageContentFromHtml(html);
+
+			if ( !$content.length ) {
+				callback('error');
+				return;
+			}
+
+			$loader.empty().append($content);
+			callback('success');
+		}).fail(function() {
+			callback('error');
+		});
+	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Gallery lightbox
 
@@ -464,7 +519,7 @@
 
 		navSourcePath = normalizeProjectPath(navTarget || window.location.pathname);
 		navTarget = mainPageUrl;
-		History.pushState(null, docTitle, mainPageUrl);
+		pushPageState(mainPageUrl);
 		return true;
 	}
 
@@ -499,7 +554,7 @@
 
 		navSourcePath = normalizeProjectPath(navTarget || window.location.pathname);
 		navTarget = parentUrl;
-		History.pushState(null, docTitle, parentUrl);
+		pushPageState(parentUrl);
 		return true;
 	}
 
@@ -534,7 +589,7 @@
 
 		navSourcePath = normalizeProjectPath(navTarget || window.location.pathname);
 		navTarget = childUrl;
-		History.pushState(null, docTitle, childUrl);
+		pushPageState(childUrl);
 		return true;
 	}
 
@@ -609,6 +664,7 @@
 	}
 
 	function revealPageContent() {
+		clearLoadingFallbackTimer();
 		var $portfolioFit = $('.portfolio--fit');
 
 		if ( $portfolioFit.length ) {
@@ -1278,7 +1334,7 @@
 		}
 
 		navTarget = nextProjectUrl;
-		History.pushState(null, docTitle, nextProjectUrl);
+		pushPageState(nextProjectUrl);
 		return true;
 	}
 
@@ -1294,7 +1350,7 @@
 		}
 
 		navTarget = previousProjectUrl;
-		History.pushState(null, docTitle, previousProjectUrl);
+		pushPageState(previousProjectUrl);
 		return true;
 	}
 
@@ -1322,7 +1378,7 @@
 
 		closeGalleryLightbox(true, function() {
 			navTarget = nextProjectUrl;
-			History.pushState(null, docTitle, nextProjectUrl);
+			pushPageState(nextProjectUrl);
 		});
 	}
 
@@ -1550,17 +1606,8 @@
 	var skipInitialStateChange = true;
 	var pageLoadRequestId = 0;
 
-	function getAjaxPageLoadUrl() {
-		return window.location.pathname + window.location.search;
-	}
-
 	function hasLoadedPageContent($loader) {
 		return $loader.find('.page__content').length > 0;
-	}
-
-	function handleFailedPageLoad(loadUrl) {
-		$('body').removeClass('loading menu--open sidebar-exit-animating sidebar-exit-active');
-		window.location.assign(loadUrl);
 	}
 
 	History.Adapter.bind(window,'statechange',function(){
@@ -1576,6 +1623,7 @@
 
 		fadeCoverBackgroundOnLeave();
 		$('body').addClass('loading');
+		scheduleLoadingFallback();
 		$pageLoader.empty();
 
 		function swapPageContent() {
@@ -1591,9 +1639,11 @@
 
 			$('body').attr('data-page-url', window.location.pathname);
 			navTarget = $('body').attr('data-page-url');
-			docTitle = $('.page__content').attr('data-page-title');
 
-			if ( docTitle ) {
+			var nextTitle = $('.page__content').attr('data-page-title');
+
+			if ( nextTitle ) {
+				docTitle = nextTitle;
 				document.title = docTitle;
 			}
 
@@ -1607,14 +1657,14 @@
 			$('body').removeClass('sidebar-exit-animating sidebar-exit-active');
 		}
 
-		function onPageLoadComplete(response, status) {
+		function onPageLoadComplete(status) {
 			if ( thisRequestId !== pageLoadRequestId ) {
-				return;
+				return false;
 			}
 
 			if ( status !== 'success' || !hasLoadedPageContent($pageLoader) ) {
 				handleFailedPageLoad(loadUrl);
-				return;
+				return false;
 			}
 
 			return true;
@@ -1637,16 +1687,16 @@
 				trySwapToCoverIntro();
 			});
 
-			$pageLoader.load(loadUrl + ' .page__content', function(response, status) {
-				loadDone = onPageLoadComplete(response, status) === true;
+			loadAjaxPageContent(loadUrl, $pageLoader, function(status) {
+				loadDone = onPageLoadComplete(status) === true;
 				trySwapToCoverIntro();
 			});
 		}
 		else {
 			var transitionTime = 400;
 
-			$pageLoader.load(loadUrl + ' .page__content', function(response, status) {
-				if ( onPageLoadComplete(response, status) !== true ) {
+			loadAjaxPageContent(loadUrl, $pageLoader, function(status) {
+				if ( onPageLoadComplete(status) !== true ) {
 					return;
 				}
 
@@ -1711,7 +1761,7 @@
 				navTarget = thisTarget;
 				
 				// Switch the URL via History
-				History.pushState(null, docTitle, thisTarget);
+				pushPageState(thisTarget);
 			}
 
 		});
@@ -1769,6 +1819,12 @@
 			else {
 				revealPageContent();
 			}
+
+			window.setTimeout(function() {
+				if ( $('body').hasClass('loading') ) {
+					revealPageContent();
+				}
+			}, 3000);
 		}
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Active links
@@ -1785,7 +1841,9 @@
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Galleries
 
 		// Destroy all existing waypoints
-		Waypoint.destroyAll();
+		if ( window.Waypoint && typeof Waypoint.destroyAll === 'function' ) {
+			Waypoint.destroyAll();
+		}
 
 		// Set up count for galleries to give them unique IDs
 		var galleryCount = 0;
