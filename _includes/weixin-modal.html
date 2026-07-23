@@ -15,19 +15,20 @@
 				src="{{ weixin.qr_image | relative_url }}"
 				alt="{{ weixin.label }}"
 			>
-			<p class="weixin-modal__hint">{{ weixin.desktop_hint }}</p>
 		</div>
 
 		<div class="weixin-modal__mobile">
-			<p class="weixin-modal__id">{{ weixin.id }}</p>
+			<button type="button" class="weixin-modal__id js-weixin-copy" data-copied-label="{{ weixin.copied_label }}">{{ weixin.id }}</button>
 			<button type="button" class="weixin-modal__copy js-weixin-copy" data-copied-label="{{ weixin.copied_label }}">{{ weixin.copy_label }}</button>
 			<img
 				class="weixin-modal__qr weixin-modal__qr--small"
 				src="{{ weixin.qr_image | relative_url }}"
 				alt="{{ weixin.label }}"
 			>
-			<p class="weixin-modal__hint">{{ weixin.mobile_hint }}</p>
+			<p class="weixin-modal__hint">{{ weixin.mobile_save_hint }}</p>
 		</div>
+
+		<p class="weixin-modal__search-hint">{{ weixin.search_hint }}</p>
 	</div>
 </div>
 

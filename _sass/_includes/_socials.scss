@@ -40,11 +40,19 @@
 		font-size: 20px;
 	}
 
-	svg {
+	svg,
+	.socials__item__icon {
 		position: absolute;
 		top: 50%;
 		left: 50%;
+		width: 17px;
+		height: 17px;
 		@include translate(-50%,-52%);
+
+		@include mq(tabletp) {
+			width: 20px;
+			height: 20px;
+		}
 	}
 
 	&:hover {

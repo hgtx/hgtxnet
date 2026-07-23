@@ -90,12 +90,30 @@
 	color: $text-medium-color;
 }
 
+.weixin-modal__search-hint {
+	margin: 20px 0 0;
+	font-size: 14px;
+	line-height: 1.5;
+	color: $text-medium-color;
+}
+
 .weixin-modal__id {
+	display: inline-block;
 	margin: 0;
+	border: 0;
+	padding: 0;
+	background: transparent;
+	font-family: $body-font;
 	font-size: 22px;
 	font-weight: $bold-weight;
 	letter-spacing: 0.04em;
 	color: $text-dark-color;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+
+	&--copied {
+		color: $accent-color;
+	}
 }
 
 .weixin-modal__copy {

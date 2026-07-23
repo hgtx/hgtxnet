@@ -1491,8 +1491,10 @@
 	var $weixinModal = $('#weixin-modal');
 
 	if ( $weixinModal.length ) {
-		var $weixinCopyButton = $weixinModal.find('.js-weixin-copy');
-		var weixinCopyDefaultLabel = $weixinCopyButton.text();
+		var $weixinCopyButtons = $weixinModal.find('.js-weixin-copy');
+		var weixinCopyDefaultLabels = $weixinCopyButtons.map(function() {
+			return $(this).text();
+		}).get();
 
 		function openWeixinModal() {
 			$weixinModal
@@ -1509,38 +1511,94 @@
 
 			$('body').removeClass('weixin-modal-active');
 
-			$weixinCopyButton
-				.removeClass('weixin-modal__copy--copied')
-				.text(weixinCopyDefaultLabel);
+			$weixinCopyButtons.each(function(index) {
+				var $button = $(this);
+
+				$button
+					.removeClass('weixin-modal__copy--copied weixin-modal__id--copied')
+					.text(weixinCopyDefaultLabels[index]);
+			});
+
+			$weixinModal.find('.weixin-modal__id').removeClass('weixin-modal__id--copied');
+		}
+
+		function legacyCopyWeixinId(weixinId) {
+			var textarea = document.createElement('textarea');
+
+			textarea.value = weixinId;
+			textarea.setAttribute('readonly', '');
+			textarea.style.position = 'fixed';
+			textarea.style.top = '0';
+			textarea.style.left = '0';
+			textarea.style.width = '2em';
+			textarea.style.height = '2em';
+			textarea.style.padding = '0';
+			textarea.style.border = 'none';
+			textarea.style.outline = 'none';
+			textarea.style.boxShadow = 'none';
+			textarea.style.background = 'transparent';
+			textarea.style.opacity = '0';
+
+			document.body.appendChild(textarea);
+			textarea.focus();
+			textarea.select();
+			textarea.setSelectionRange(0, weixinId.length);
+
+			var copied = false;
+
+			try {
+				copied = document.execCommand('copy');
+			}
+			catch ( error ) {}
+
+			document.body.removeChild(textarea);
+
+			return copied;
+		}
+
+		function showWeixinCopiedState() {
+			var copiedLabel = $weixinModal.find('.js-weixin-copy').first().attr('data-copied-label') || 'Copied';
+
+			$weixinModal.find('.weixin-modal__id').addClass('weixin-modal__id--copied');
+
+			$weixinModal.find('.weixin-modal__copy').each(function() {
+				$(this)
+					.addClass('weixin-modal__copy--copied')
+					.text(copiedLabel);
+			});
 		}
 
 		function copyWeixinId() {
-			var weixinId = $.trim($weixinModal.find('.weixin-modal__id').text());
+			var weixinId = $.trim($weixinModal.find('.weixin-modal__id').first().text());
 
 			if ( !weixinId ) {
 				return;
 			}
 
-			function showCopiedState() {
-				$weixinCopyButton
-					.addClass('weixin-modal__copy--copied')
-					.text($weixinCopyButton.attr('data-copied-label') || 'Copied');
+			function finishCopy(success) {
+				if ( success ) {
+					showWeixinCopiedState();
+				}
 			}
 
-			if ( navigator.clipboard && navigator.clipboard.writeText ) {
-				navigator.clipboard.writeText(weixinId).then(showCopiedState);
+			if ( legacyCopyWeixinId(weixinId) ) {
+				finishCopy(true);
 				return;
 			}
 
-			var $tempInput = $('<textarea>').val(weixinId).appendTo('body').select();
+			if ( navigator.clipboard && navigator.clipboard.writeText ) {
+				navigator.clipboard.writeText(weixinId)
+					.then(function() {
+						finishCopy(true);
+					})
+					.catch(function() {
+						finishCopy(legacyCopyWeixinId(weixinId));
+					});
 
-			try {
-				document.execCommand('copy');
-				showCopiedState();
+				return;
 			}
-			catch ( error ) {}
 
-			$tempInput.remove();
+			finishCopy(false);
 		}
 
 		$(document).on('click', '.js-weixin-open', function(event) {
@@ -1552,7 +1610,8 @@
 			closeWeixinModal();
 		});
 
-		$weixinModal.on('click', '.js-weixin-copy', function() {
+		$weixinModal.on('click', '.js-weixin-copy', function(event) {
+			event.preventDefault();
 			copyWeixinId();
 		});
 
