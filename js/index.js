@@ -49,6 +49,8 @@
 	var galleryLightboxOpenOnLoad = false;
 	var galleryThumbTouchStartX = 0;
 	var galleryThumbTouchStartY = 0;
+	var portfolioTouchStartX = 0;
+	var portfolioTouchStartY = 0;
 
 	function getGalleryLightboxTrack() {
 		return $galleryLightbox.find('.gallery-lightbox__track');
@@ -351,6 +353,164 @@
 		return projectUrls[(currentIndex + 1) % projectUrls.length];
 	}
 
+	function getPreviousProjectUrl() {
+		var projectUrls = getProjectUrls();
+
+		if ( !projectUrls.length ) {
+			return null;
+		}
+
+		var currentPath = normalizeProjectPath(navTarget || window.location.pathname);
+		var currentIndex = projectUrls.indexOf(currentPath);
+
+		if ( currentIndex < 0 ) {
+			return projectUrls[projectUrls.length - 1];
+		}
+
+		return projectUrls[(currentIndex - 1 + projectUrls.length) % projectUrls.length];
+	}
+
+	function isCoverPage() {
+		var path = normalizeProjectPath(navTarget || window.location.pathname);
+
+		return path === '/' || $('.page__content .cover').length > 0;
+	}
+
+	function isProjectsListingPage() {
+		var path = normalizeProjectPath(navTarget || window.location.pathname);
+
+		return path === '/projects/' || $('.page__content .portfolio-wrap').length > 0;
+	}
+
+	function isMainMenuPage() {
+		var currentPath = normalizeProjectPath(navTarget || window.location.pathname);
+
+		return getMainPageUrls().indexOf(currentPath) >= 0;
+	}
+
+	function isMainNavigationContext() {
+		return isCoverPage() || isMainMenuPage();
+	}
+
+	function isProjectGalleryPage() {
+		var path = normalizeProjectPath(navTarget || window.location.pathname);
+
+		if ( path.indexOf('/project/') !== 0 ) {
+			return false;
+		}
+
+		return $('.page__content .gallery--grid .gallery__item__link').length > 0;
+	}
+
+	function getMainPageUrls() {
+		return $('.menu .menu__list__item__link').map(function() {
+			return normalizeProjectPath($(this).attr('href'));
+		}).get();
+	}
+
+	function navigateMainPage(delta) {
+		if ( galleryLightboxAnimating || isGalleryLightboxOpen() ) {
+			return false;
+		}
+
+		if ( !isMainNavigationContext() ) {
+			return false;
+		}
+
+		var mainPageUrls = getMainPageUrls();
+		var mainPageUrl;
+
+		if ( !mainPageUrls.length ) {
+			return false;
+		}
+
+		var currentPath = normalizeProjectPath(navTarget || window.location.pathname);
+		var currentIndex = mainPageUrls.indexOf(currentPath);
+
+		if ( currentIndex < 0 ) {
+			if ( !isCoverPage() ) {
+				return false;
+			}
+
+			mainPageUrl = delta > 0 ? mainPageUrls[0] : mainPageUrls[mainPageUrls.length - 1];
+		}
+		else {
+			mainPageUrl = mainPageUrls[(currentIndex + delta + mainPageUrls.length) % mainPageUrls.length];
+		}
+
+		navTarget = mainPageUrl;
+		History.pushState(null, docTitle, mainPageUrl);
+		return true;
+	}
+
+	function getParentPageUrl() {
+		var path = normalizeProjectPath(navTarget || window.location.pathname);
+
+		if ( path === '/' ) {
+			return null;
+		}
+
+		if ( isMainMenuPage() ) {
+			return '/';
+		}
+
+		if ( path.indexOf('/project/') === 0 ) {
+			return '/projects/';
+		}
+
+		return null;
+	}
+
+	function navigateUpHierarchy() {
+		if ( galleryLightboxAnimating || isGalleryLightboxOpen() ) {
+			return false;
+		}
+
+		var parentUrl = getParentPageUrl();
+
+		if ( !parentUrl ) {
+			return false;
+		}
+
+		navTarget = parentUrl;
+		History.pushState(null, docTitle, parentUrl);
+		return true;
+	}
+
+	function getChildPageUrl() {
+		if ( isCoverPage() ) {
+			return '/projects/';
+		}
+
+		if ( isProjectsListingPage() ) {
+			var projectUrls = getProjectUrls();
+
+			if ( !projectUrls.length ) {
+				return null;
+			}
+
+			return projectUrls[0];
+		}
+
+		return null;
+	}
+
+	function navigateDownHierarchy() {
+		if ( galleryLightboxAnimating || isGalleryLightboxOpen() ) {
+			return false;
+		}
+
+		var childUrl = getChildPageUrl();
+
+		if ( !childUrl ) {
+			return false;
+		}
+
+		navTarget = childUrl;
+		History.pushState(null, docTitle, childUrl);
+		return true;
+	}
+
 	function openFirstGalleryLightboxFromThumbnails() {
 		if ( galleryLightboxAnimating || isGalleryLightboxOpen() ) {
 			return false;
@@ -363,6 +523,38 @@
 		}
 
 		openGalleryLightbox($firstLink.attr('href'), $firstLink);
+		return true;
+	}
+
+	function navigateToNextProjectFromThumbnails() {
+		if ( galleryLightboxAnimating || isGalleryLightboxOpen() || !isProjectGalleryPage() ) {
+			return false;
+		}
+
+		var nextProjectUrl = getNextProjectUrl();
+
+		if ( !nextProjectUrl ) {
+			return false;
+		}
+
+		navTarget = nextProjectUrl;
+		History.pushState(null, docTitle, nextProjectUrl);
+		return true;
+	}
+
+	function navigateToPreviousProjectFromThumbnails() {
+		if ( galleryLightboxAnimating || isGalleryLightboxOpen() || !isProjectGalleryPage() ) {
+			return false;
+		}
+
+		var previousProjectUrl = getPreviousProjectUrl();
+
+		if ( !previousProjectUrl ) {
+			return false;
+		}
+
+		navTarget = previousProjectUrl;
+		History.pushState(null, docTitle, previousProjectUrl);
 		return true;
 	}
 
@@ -474,8 +666,30 @@
 			return;
 		}
 
-		if ( event.key === 'ArrowDown' && openFirstGalleryLightboxFromThumbnails() ) {
+		if ( event.key === 'ArrowLeft' && navigateUpHierarchy() ) {
 			event.preventDefault();
+		}
+		else if ( event.key === 'ArrowRight' && navigateDownHierarchy() ) {
+			event.preventDefault();
+		}
+		else if ( isMainNavigationContext() ) {
+			if ( event.key === 'ArrowDown' && navigateMainPage(1) ) {
+				event.preventDefault();
+			}
+			else if ( event.key === 'ArrowUp' && navigateMainPage(-1) ) {
+				event.preventDefault();
+			}
+		}
+		else if ( isProjectGalleryPage() ) {
+			if ( event.key === 'ArrowRight' && openFirstGalleryLightboxFromThumbnails() ) {
+				event.preventDefault();
+			}
+			else if ( event.key === 'ArrowDown' && navigateToNextProjectFromThumbnails() ) {
+				event.preventDefault();
+			}
+			else if ( event.key === 'ArrowUp' && navigateToPreviousProjectFromThumbnails() ) {
+				event.preventDefault();
+			}
 		}
 	});
 
@@ -503,7 +717,55 @@
 		}
 
 		if ( Math.abs(deltaY) > Math.abs(deltaX) && deltaY > 0 ) {
-			openFirstGalleryLightboxFromThumbnails();
+			navigateToNextProjectFromThumbnails();
+		}
+		else if ( Math.abs(deltaY) > Math.abs(deltaX) && deltaY < 0 ) {
+			navigateToPreviousProjectFromThumbnails();
+		}
+		else if ( Math.abs(deltaX) >= 50 && Math.abs(deltaX) > Math.abs(deltaY) ) {
+			if ( deltaX < 0 ) {
+				navigateUpHierarchy();
+			}
+			else {
+				openFirstGalleryLightboxFromThumbnails();
+			}
+		}
+	});
+
+	$(document).on('touchstart', '.page__content', function(event) {
+		if ( isGalleryLightboxOpen() || isProjectGalleryPage() || !isMainNavigationContext() ) {
+			return;
+		}
+
+		portfolioTouchStartX = event.originalEvent.touches[0].clientX;
+		portfolioTouchStartY = event.originalEvent.touches[0].clientY;
+	});
+
+	$(document).on('touchend', '.page__content', function(event) {
+		if ( isGalleryLightboxOpen() || isProjectGalleryPage() || !isMainNavigationContext() ) {
+			return;
+		}
+
+		var touchEndX = event.originalEvent.changedTouches[0].clientX;
+		var touchEndY = event.originalEvent.changedTouches[0].clientY;
+		var deltaX = touchEndX - portfolioTouchStartX;
+		var deltaY = touchEndY - portfolioTouchStartY;
+
+		if ( Math.abs(deltaX) < 50 && Math.abs(deltaY) < 50 ) {
+			return;
+		}
+
+		if ( Math.abs(deltaY) > Math.abs(deltaX) && deltaY > 0 ) {
+			navigateMainPage(1);
+		}
+		else if ( Math.abs(deltaY) > Math.abs(deltaX) && deltaY < 0 ) {
+			navigateMainPage(-1);
+		}
+		else if ( Math.abs(deltaX) >= 50 && Math.abs(deltaX) > Math.abs(deltaY) && deltaX < 0 ) {
+			navigateUpHierarchy();
+		}
+		else if ( Math.abs(deltaX) >= 50 && Math.abs(deltaX) > Math.abs(deltaY) && deltaX > 0 ) {
+			navigateDownHierarchy();
 		}
 	});
 
