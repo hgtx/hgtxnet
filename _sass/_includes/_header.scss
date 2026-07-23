@@ -235,6 +235,18 @@
 
 }
 
+.menu__socials {
+	padding: 28px 20px 40px;
+
+	@include mq(tabletp) {
+		padding: 28px 40px 40px;
+	}
+
+	@include mq(tabletl) {
+		display: none;
+	}
+}
+
 .menu__list__item__link {
 	font-size: $menu-small;
 	font-weight: $menu-weight;
