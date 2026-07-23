@@ -516,7 +516,7 @@
 		$('a[href="' + navTarget + '"]').addClass('active-link');
 
 		// Show project list only on Projects pages
-		if ( navTarget === '/' || navTarget.indexOf('/project/') === 0 ) {
+		if ( navTarget === '/projects/' || navTarget === '/projects' || navTarget.indexOf('/project/') === 0 ) {
 			$('.projects-menu').addClass('projects-menu--visible');
 		}
 		else {

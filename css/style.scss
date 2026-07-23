@@ -162,6 +162,7 @@ $grid-spacing: {{ site.data.settings.grid_settings.grid_spacing }}px;
 
 // - - - - - - - - - - Section styles
 
+@import "_includes/_cover";
 @import "_includes/_portfolio";
 @import "_includes/_blog";
 
