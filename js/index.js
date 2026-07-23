@@ -1547,26 +1547,77 @@
 	});
 
 	// State change event
+	var skipInitialStateChange = true;
+	var pageLoadRequestId = 0;
+
+	function getAjaxPageLoadUrl() {
+		return window.location.pathname + window.location.search;
+	}
+
+	function hasLoadedPageContent($loader) {
+		return $loader.find('.page__content').length > 0;
+	}
+
+	function handleFailedPageLoad(loadUrl) {
+		$('body').removeClass('loading menu--open sidebar-exit-animating sidebar-exit-active');
+		window.location.assign(loadUrl);
+	}
+
 	History.Adapter.bind(window,'statechange',function(){
-		var state = History.getState();
+		if ( skipInitialStateChange ) {
+			skipInitialStateChange = false;
+			return;
+		}
+
 		var navigatingToCoverIntro = isNavigatingToCoverIntro();
+		var loadUrl = getAjaxPageLoadUrl();
+		var thisRequestId = ++pageLoadRequestId;
+		var $pageLoader = $('.page-loader');
 
 		fadeCoverBackgroundOnLeave();
 		$('body').addClass('loading');
+		$pageLoader.empty();
 
 		function swapPageContent() {
+			if ( !hasLoadedPageContent($pageLoader) ) {
+				handleFailedPageLoad(loadUrl);
+				return;
+			}
+
 			$( 'body, html' ).scrollTop(0);
 
 			$('.page .page__content').remove();
-			$('.page-loader .page__content').appendTo('.page');
+			$pageLoader.find('.page__content').appendTo('.page');
 
 			$('body').attr('data-page-url', window.location.pathname);
 			navTarget = $('body').attr('data-page-url');
 			docTitle = $('.page__content').attr('data-page-title');
-			document.title = docTitle;
 
-			pageFunctions();
+			if ( docTitle ) {
+				document.title = docTitle;
+			}
+
+			try {
+				pageFunctions();
+			}
+			catch ( error ) {
+				revealPageContent();
+			}
+
 			$('body').removeClass('sidebar-exit-animating sidebar-exit-active');
+		}
+
+		function onPageLoadComplete(response, status) {
+			if ( thisRequestId !== pageLoadRequestId ) {
+				return;
+			}
+
+			if ( status !== 'success' || !hasLoadedPageContent($pageLoader) ) {
+				handleFailedPageLoad(loadUrl);
+				return;
+			}
+
+			return true;
 		}
 
 		if ( navigatingToCoverIntro ) {
@@ -1586,18 +1637,26 @@
 				trySwapToCoverIntro();
 			});
 
-			$('.page-loader').load( state.hash + ' .page__content', function() {
-				loadDone = true;
+			$pageLoader.load(loadUrl + ' .page__content', function(response, status) {
+				loadDone = onPageLoadComplete(response, status) === true;
 				trySwapToCoverIntro();
 			});
 		}
 		else {
 			var transitionTime = 400;
 
-			$('.page-loader').load( state.hash + ' .page__content', function() {
+			$pageLoader.load(loadUrl + ' .page__content', function(response, status) {
+				if ( onPageLoadComplete(response, status) !== true ) {
+					return;
+				}
+
 				$( 'body, html' ).scrollTop(0);
 
 				window.setTimeout(function() {
+					if ( thisRequestId !== pageLoadRequestId ) {
+						return;
+					}
+
 					swapPageContent();
 				}, transitionTime);
 			});
@@ -1693,9 +1752,23 @@
 			$('body').removeClass('is-cover-page is-projects-page').css('overflow', '');
 			$('.page').removeClass('page--cover');
 
-			$('.page__content').find('img:first').imagesLoaded(function() {
+			var $pageContent = $('.page__content');
+
+			if ( !$pageContent.length ) {
 				revealPageContent();
-			});
+				return;
+			}
+
+			var $firstImage = $pageContent.find('img:first');
+
+			if ( $firstImage.length ) {
+				$firstImage.imagesLoaded(function() {
+					revealPageContent();
+				});
+			}
+			else {
+				revealPageContent();
+			}
 		}
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Active links
