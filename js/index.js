@@ -23,54 +23,357 @@
 	var $galleryLightbox = $(
 		'<div class="gallery-lightbox" aria-hidden="true">' +
 			'<div class="gallery-lightbox__overlay"></div>' +
-			'<div class="gallery-lightbox__stage">' +
-				'<img class="gallery-lightbox__image" alt="">' +
+			'<div class="gallery-lightbox__viewport">' +
+				'<div class="gallery-lightbox__track is-resetting">' +
+					'<div class="gallery-lightbox__slide">' +
+						'<img class="gallery-lightbox__image" alt="">' +
+					'</div>' +
+				'</div>' +
 			'</div>' +
 		'</div>'
 	);
 
 	$galleryLightbox.appendTo('body');
 
-	function openGalleryLightbox(imageSrc) {
-		var $image = $galleryLightbox.find('.gallery-lightbox__image');
+	var galleryLightboxState = {
+		images: [],
+		index: -1
+	};
+
+	var galleryLightboxAnimating = false;
+
+	var galleryLightboxTouchStartX = 0;
+	var galleryLightboxTouchStartY = 0;
+	var galleryLightboxDidSwipe = false;
+
+	function getGalleryLightboxTrack() {
+		return $galleryLightbox.find('.gallery-lightbox__track');
+	}
+
+	function getGalleryLightboxImage() {
+		return $galleryLightbox.find('.gallery-lightbox__image');
+	}
+
+	function normalizeGalleryIndex(index) {
+		var total = galleryLightboxState.images.length;
+
+		if ( index < 0 ) {
+			index = total - 1;
+		}
+
+		if ( index >= total ) {
+			index = 0;
+		}
+
+		return index;
+	}
+
+	function loadGalleryLightboxImage($image, src, callback) {
+		$image.one('load', callback);
+		$image.attr('src', src);
+
+		if ( $image[0].complete ) {
+			callback();
+		}
+	}
+
+	function forceGalleryLightboxReflow($element) {
+		return $element[0].offsetHeight;
+	}
+
+	function setGalleryLightboxSingleSlide(src, callback) {
+		var $track = getGalleryLightboxTrack();
+
+		$track
+			.removeClass('is-animating')
+			.addClass('is-resetting')
+			.css('transform', 'translate3d(0, 0, 0)')
+			.html('<div class="gallery-lightbox__slide"><img class="gallery-lightbox__image" alt=""></div>');
+
+		loadGalleryLightboxImage($track.find('.gallery-lightbox__image'), src, function() {
+			$track.removeClass('is-resetting');
+
+			if ( callback ) {
+				callback();
+			}
+		});
+	}
+
+	function resetGalleryLightboxSlides() {
+		galleryLightboxAnimating = false;
+
+		getGalleryLightboxTrack()
+			.removeClass('is-animating is-resetting')
+			.css('transform', 'translate3d(0, 0, 0)')
+			.html('<div class="gallery-lightbox__slide"><img class="gallery-lightbox__image" alt=""></div>');
+
+		getGalleryLightboxImage().attr('src', '');
+	}
+
+	function animateGalleryLightboxSlide(index, direction) {
+		if ( galleryLightboxAnimating || !galleryLightboxState.images.length ) {
+			return;
+		}
+
+		var oldIndex = galleryLightboxState.index;
+
+		index = normalizeGalleryIndex(index);
+
+		if ( index === oldIndex ) {
+			return;
+		}
+
+		var outgoingSrc = galleryLightboxState.images[oldIndex];
+		var incomingSrc = galleryLightboxState.images[index];
+		var $track = getGalleryLightboxTrack();
+		var trackHtml;
+
+		galleryLightboxAnimating = true;
+
+		if ( direction > 0 ) {
+			trackHtml =
+				'<div class="gallery-lightbox__slide"><img class="gallery-lightbox__image" alt=""></div>' +
+				'<div class="gallery-lightbox__slide"><img class="gallery-lightbox__image" alt=""></div>';
+
+			$track
+				.removeClass('is-animating')
+				.addClass('is-resetting')
+				.css('transform', 'translate3d(0, 0, 0)')
+				.html(trackHtml);
+
+			$track.find('.gallery-lightbox__slide').eq(0).find('img').attr('src', outgoingSrc);
+		}
+		else {
+			trackHtml =
+				'<div class="gallery-lightbox__slide"><img class="gallery-lightbox__image" alt=""></div>' +
+				'<div class="gallery-lightbox__slide"><img class="gallery-lightbox__image" alt=""></div>';
+
+			$track
+				.removeClass('is-animating')
+				.addClass('is-resetting')
+				.css('transform', 'translate3d(-100vw, 0, 0)')
+				.html(trackHtml);
+
+			$track.find('.gallery-lightbox__slide').eq(1).find('img').attr('src', outgoingSrc);
+		}
+
+		var $incomingImage = direction > 0 ?
+			$track.find('.gallery-lightbox__slide').eq(1).find('img') :
+			$track.find('.gallery-lightbox__slide').eq(0).find('img');
+
+		loadGalleryLightboxImage($incomingImage, incomingSrc, function() {
+			forceGalleryLightboxReflow($track);
+
+			$track.removeClass('is-resetting').addClass('is-animating');
+
+			if ( direction > 0 ) {
+				$track.css('transform', 'translate3d(-100vw, 0, 0)');
+			}
+			else {
+				$track.css('transform', 'translate3d(0, 0, 0)');
+			}
+
+			galleryLightboxState.index = index;
+
+			var finished = false;
+
+			var finishSlide = function(event) {
+				if ( event && event.target !== $track[0] ) {
+					return;
+				}
+
+				if ( finished ) {
+					return;
+				}
+
+				finished = true;
+				$track.off('transitionend webkitTransitionEnd', finishSlide);
+				setGalleryLightboxSingleSlide(incomingSrc);
+				galleryLightboxAnimating = false;
+			};
+
+			$track.on('transitionend webkitTransitionEnd', finishSlide);
+			window.setTimeout(finishSlide, 650);
+		});
+	}
+
+	function showGalleryLightboxImage(index, direction) {
+		if ( direction === 0 ) {
+			$galleryLightbox.addClass('gallery-lightbox--loading');
+
+			setGalleryLightboxSingleSlide(galleryLightboxState.images[index], function() {
+				$galleryLightbox.removeClass('gallery-lightbox--loading');
+			});
+
+			return;
+		}
+
+		animateGalleryLightboxSlide(index, direction);
+	}
+
+	function openGalleryLightbox(imageSrc, $link) {
+		galleryLightboxState.images = getGalleryImages($link);
+		galleryLightboxState.index = galleryLightboxState.images.indexOf(imageSrc);
+
+		if ( galleryLightboxState.index < 0 ) {
+			galleryLightboxState.index = 0;
+		}
+
+		resetGalleryLightboxSlides();
 
 		$galleryLightbox
-			.addClass('gallery-lightbox--loading')
 			.addClass('gallery-lightbox--open')
 			.attr('aria-hidden', 'false');
 
 		$('body').addClass('gallery-lightbox-active');
 
-		$image.one('load', function() {
-			$galleryLightbox.removeClass('gallery-lightbox--loading');
-		});
-
-		$image.attr('src', imageSrc);
-
-		if ( $image[0].complete ) {
-			$galleryLightbox.removeClass('gallery-lightbox--loading');
-		}
+		showGalleryLightboxImage(galleryLightboxState.index, 0);
 	}
 
-	function closeGalleryLightbox() {
+	function navigateGalleryLightbox(delta) {
+		if ( !galleryLightboxState.images.length || galleryLightboxAnimating ) {
+			return;
+		}
+
+		showGalleryLightboxImage(galleryLightboxState.index + delta, delta);
+	}
+
+	function finalizeGalleryLightboxClose() {
 		$galleryLightbox
-			.removeClass('gallery-lightbox--open gallery-lightbox--loading')
+			.removeClass('gallery-lightbox--open gallery-lightbox--loading gallery-lightbox--closing')
 			.attr('aria-hidden', 'true');
 
-		$galleryLightbox.find('.gallery-lightbox__image').attr('src', '');
+		resetGalleryLightboxSlides();
 		$('body').removeClass('gallery-lightbox-active');
+
+		galleryLightboxState.images = [];
+		galleryLightboxState.index = -1;
+		galleryLightboxAnimating = false;
+	}
+
+	function closeGalleryLightbox(animated) {
+		if ( galleryLightboxAnimating || !isGalleryLightboxOpen() ) {
+			return;
+		}
+
+		if ( !animated ) {
+			finalizeGalleryLightboxClose();
+			return;
+		}
+
+		var $track = getGalleryLightboxTrack();
+
+		galleryLightboxAnimating = true;
+		$galleryLightbox.addClass('gallery-lightbox--closing');
+
+		forceGalleryLightboxReflow($track);
+
+		$track
+			.removeClass('is-resetting is-closing')
+			.addClass('is-animating is-closing')
+			.css('transform', 'translate3d(0, 100vh, 0)');
+
+		var finished = false;
+
+		var finishClose = function(event) {
+			if ( event && event.target !== $track[0] ) {
+				return;
+			}
+
+			if ( finished ) {
+				return;
+			}
+
+			finished = true;
+			$track.off('transitionend webkitTransitionEnd', finishClose);
+			finalizeGalleryLightboxClose();
+		};
+
+		$track.on('transitionend webkitTransitionEnd', finishClose);
+		window.setTimeout(finishClose, 650);
+	}
+
+	function getGalleryImages($link) {
+		return $link.closest('.gallery--grid').find('.gallery__item__link').map(function() {
+			return $(this).attr('href');
+		}).get();
+	}
+
+	function isGalleryLightboxOpen() {
+		return $galleryLightbox.hasClass('gallery-lightbox--open');
 	}
 
 	$(document).on('click', '.gallery--grid .gallery__item__link', function(event) {
 		event.preventDefault();
-		openGalleryLightbox($(this).attr('href'));
+		openGalleryLightbox($(this).attr('href'), $(this));
 	});
 
-	$(document).on('click', '.gallery-lightbox__overlay, .gallery-lightbox__image', closeGalleryLightbox);
+	$(document).on('click', '.gallery-lightbox__overlay', function() {
+		closeGalleryLightbox(false);
+	});
+
+	$(document).on('click', '.gallery-lightbox__viewport .gallery-lightbox__image', function() {
+		if ( galleryLightboxDidSwipe ) {
+			return;
+		}
+
+		closeGalleryLightbox(false);
+	});
+
+	$galleryLightbox.on('touchstart', '.gallery-lightbox__viewport', function(event) {
+		galleryLightboxTouchStartX = event.originalEvent.touches[0].clientX;
+		galleryLightboxTouchStartY = event.originalEvent.touches[0].clientY;
+		galleryLightboxDidSwipe = false;
+	});
+
+	$galleryLightbox.on('touchend', '.gallery-lightbox__viewport', function(event) {
+		var touchEndX = event.originalEvent.changedTouches[0].clientX;
+		var touchEndY = event.originalEvent.changedTouches[0].clientY;
+		var deltaX = touchEndX - galleryLightboxTouchStartX;
+		var deltaY = touchEndY - galleryLightboxTouchStartY;
+
+		if ( Math.abs(deltaX) < 50 && Math.abs(deltaY) < 50 ) {
+			return;
+		}
+
+		galleryLightboxDidSwipe = true;
+
+		if ( Math.abs(deltaY) > Math.abs(deltaX) && deltaY < 0 ) {
+			closeGalleryLightbox(true);
+		}
+		else if ( Math.abs(deltaX) >= 50 ) {
+			if ( deltaX < 0 ) {
+				navigateGalleryLightbox(1);
+			}
+			else {
+				navigateGalleryLightbox(-1);
+			}
+		}
+
+		setTimeout(function() {
+			galleryLightboxDidSwipe = false;
+		}, 400);
+	});
 
 	$(document).on('keydown', function(event) {
+		if ( !isGalleryLightboxOpen() ) {
+			return;
+		}
+
 		if ( event.key === 'Escape' ) {
-			closeGalleryLightbox();
+			closeGalleryLightbox(false);
+		}
+		else if ( event.key === 'ArrowUp' ) {
+			event.preventDefault();
+			closeGalleryLightbox(true);
+		}
+		else if ( event.key === 'ArrowLeft' ) {
+			event.preventDefault();
+			navigateGalleryLightbox(-1);
+		}
+		else if ( event.key === 'ArrowRight' ) {
+			event.preventDefault();
+			navigateGalleryLightbox(1);
 		}
 	});
 
