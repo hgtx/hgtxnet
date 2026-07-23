@@ -282,6 +282,7 @@
 
 	.menu__list__item__link {
 		white-space: nowrap;
+		font-weight: $regular-weight;
 	}
 
 	@include mq(tabletl) {

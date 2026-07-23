@@ -1,6 +1,6 @@
 basic_settings:
-  site_title: HgTx Studio
-  site_tagline: Artwork by Hugo Teixeira
+  site_title: HGTX Studio
+  site_tagline: Artwork by HuGo TeiXeira
   favicon_image: /images/favicon.png
 
 header_settings:
@@ -22,7 +22,7 @@ menu_settings:
 
 cover_settings:
   image: /images/dog-days/dog-days-05.jpg
-  alt: HgTx Studio
+  alt: HGTX Studio
 
 grid_settings:
   overlay_opacity: .82
