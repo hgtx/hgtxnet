@@ -343,8 +343,7 @@ body.sidebar-exit-animating {
 
 		.header__title,
 		.header__tagline,
-		.menu,
-		.projects-menu {
+		.menu {
 			opacity: 1;
 			transition: opacity $cover-fade-duration $cover-fade-easing;
 		}
@@ -363,8 +362,7 @@ body.sidebar-exit-animating.sidebar-exit-active {
 
 		.header__title,
 		.header__tagline,
-		.menu,
-		.projects-menu {
+		.menu {
 			opacity: 0;
 		}
 

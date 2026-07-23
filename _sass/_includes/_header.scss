@@ -279,28 +279,18 @@
 
 
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Projects menu
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Hidden project nav
 
-.projects-menu {
-	display: none;
-
-	.menu__list__item__link {
-		white-space: nowrap;
-		font-weight: $regular-weight;
-	}
-
-	@include mq(tabletl) {
-		&.projects-menu--visible {
-			display: block;
-			margin-top: 20px;
-		}
-	}
-
-	@include mq(laptop) {
-		&.projects-menu--visible {
-			margin-top: 30px;
-		}
-	}
+.projects-nav {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
 }
 
 

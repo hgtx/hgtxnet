@@ -29,14 +29,10 @@
 			</div>
 		</div>
 
-		<div class="projects-menu{% if page.url == '/projects/' or page.collection == 'projects' %} projects-menu--visible{% endif %}">
-			<ul class="menu__list">
-				{% for project in site.projects reversed %}
-				<li class="menu__list__item">
-					<a href="{{ project.url | relative_url }}" class="menu__list__item__link">{{ project.title }}</a>
-				</li>
-				{% endfor %}
-			</ul>
+		<div class="projects-nav" aria-hidden="true">
+			{% for project in site.projects reversed %}
+			<a href="{{ project.url | relative_url }}" data-project-url></a>
+			{% endfor %}
 		</div>
 
 		<div class="header__lower">

@@ -3,7 +3,7 @@ title: 'Involuntary Landscapes (2023)'
 subtitle:
 date: 2023-02-04 00:00:00
 description: 
-featured_image: '/images/involuntary-landscapes/involuntary-landscapes-34.jpg'
+featured_image: '/images/involuntary-landscapes/involuntary-landscapes-01.jpg'
 ---
 <div class="gallery" data-columns="4">
 	<img src="/images/involuntary-landscapes/involuntary-landscapes-01.jpg">

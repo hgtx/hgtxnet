@@ -40,6 +40,7 @@
 	}
 
 	&--project {
+		background: $background-color;
 
 		.wrap {
 
@@ -75,7 +76,7 @@
 .single {
 	margin-top: 0;
 	padding: 20px 0;
-	background: $background-alt-color;
+	background: $background-color;
 	min-height: 100vh;
 
 	@include mq(tabletp) {

@@ -5,7 +5,7 @@ description: Selected works by artist Hugo Teixeira
 featured_image: /images/social.jpg
 ---
 
-<section class="portfolio">
+<section class="portfolio portfolio--fit">
 
 	<div class="content-wrap portfolio-wrap">
 
@@ -19,11 +19,8 @@ featured_image: /images/social.jpg
 					<img src="{{ project.featured_image | relative_url }}" alt="{{ project.title }}">
 				</div>
 
-				<div class="portfolio-item__content">
-					<div class="portfolio-item__info">
-						<h2 class="portfolio-item__title">{{ project.title }}</h2>
-						<p class="portfolio-item__subtitle">{{ project.subtitle }}</p>
-					</div>
+				<div class="portfolio-item__caption">
+					<h2 class="portfolio-item__title">{{ project.title }}</h2>
 				</div>
 
 			</a>
