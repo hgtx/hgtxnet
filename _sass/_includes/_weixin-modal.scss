@@ -1,0 +1,143 @@
+// - - - - - - - - - - - - - - - - - -
+
+// WeChat modal
+
+// - - - - - - - - - - - - - - - - - -
+
+.weixin-modal {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 10000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 0.25s ease-in-out, visibility 0.25s ease-in-out;
+
+	&--open {
+		opacity: 1;
+		visibility: visible;
+		pointer-events: auto;
+	}
+}
+
+.weixin-modal__overlay {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background: rgba($overlay-background-color, 0.55);
+	cursor: pointer;
+}
+
+.weixin-modal__panel {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	max-width: 320px;
+	padding: 28px 24px 24px;
+	background: $background-color;
+	text-align: center;
+}
+
+.weixin-modal__close {
+	position: absolute;
+	top: 8px;
+	right: 10px;
+	border: 0;
+	background: transparent;
+	font-size: 28px;
+	line-height: 1;
+	color: $text-light-color;
+	cursor: pointer;
+
+	&:hover {
+		color: $text-dark-color;
+	}
+}
+
+.weixin-modal__title {
+	margin: 0 0 20px;
+	font-size: 18px;
+	font-weight: $bold-weight;
+	color: $text-dark-color;
+}
+
+.weixin-modal__qr {
+	display: block;
+	width: 100%;
+	max-width: 240px;
+	height: auto;
+	margin: 0 auto;
+}
+
+.weixin-modal__qr--small {
+	max-width: 180px;
+	margin-top: 20px;
+}
+
+.weixin-modal__hint {
+	margin: 16px 0 0;
+	font-size: 13px;
+	line-height: 1.5;
+	color: $text-medium-color;
+}
+
+.weixin-modal__id {
+	margin: 0;
+	font-size: 22px;
+	font-weight: $bold-weight;
+	letter-spacing: 0.04em;
+	color: $text-dark-color;
+}
+
+.weixin-modal__copy {
+	display: inline-block;
+	margin-top: 14px;
+	border: 2px solid $text-dark-color;
+	padding: 10px 18px;
+	background: transparent;
+	font-family: $body-font;
+	font-size: 13px;
+	font-weight: $bold-weight;
+	line-height: 1;
+	color: $text-dark-color;
+	cursor: pointer;
+	transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+
+	&:hover,
+	&--copied {
+		background: $text-dark-color;
+		border-color: $text-dark-color;
+		color: $background-color;
+	}
+}
+
+.weixin-modal__desktop {
+	display: none;
+}
+
+.weixin-modal__mobile {
+	display: block;
+}
+
+@include mq(tabletp) {
+	.weixin-modal__desktop {
+		display: block;
+	}
+
+	.weixin-modal__mobile {
+		display: none;
+	}
+}
+
+body.weixin-modal-active {
+	overflow: hidden;
+}

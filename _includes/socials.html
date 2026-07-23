@@ -2,9 +2,15 @@
 	{% for url in site.data.settings.social_settings %}
 	{% if url[1] != '' %}
 	<li class="socials__item">
+		{% if url[0] == 'weixin_url' %}
+		<a href="#" class="socials__item__link js-weixin-open" title="WeChat" aria-haspopup="dialog" aria-controls="weixin-modal">
+			<i class="fab fa-weixin" aria-hidden="true"></i>
+		</a>
+		{% else %}
 		<a href="{{ url[1] }}" target="_blank" class="socials__item__link" title="{{ url[0] | remove: '_url' | replace: '-', ' ' | capitalize }}">
 			<i class="fab fa-{{ url[0] | replace: 'facebook', 'facebook-f' | remove: '_url' }}" aria-hidden="true"></i>
 		</a>
+		{% endif %}
 	</li>
 	{% endif %}
 	{% endfor %}

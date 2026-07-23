@@ -1143,6 +1143,10 @@
 			// Don't follow link
 			event.preventDefault();
 
+			if ( $(this).hasClass('js-weixin-open') ) {
+				return;
+			}
+
 			// Get the link target
 			var thisTarget = $(this).attr('href');
 
@@ -1481,5 +1485,88 @@
 	});	
 	
 	
-	
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WeChat modal
+
+	var $weixinModal = $('#weixin-modal');
+
+	if ( $weixinModal.length ) {
+		var $weixinCopyButton = $weixinModal.find('.js-weixin-copy');
+		var weixinCopyDefaultLabel = $weixinCopyButton.text();
+
+		function openWeixinModal() {
+			$weixinModal
+				.addClass('weixin-modal--open')
+				.attr('aria-hidden', 'false');
+
+			$('body').addClass('weixin-modal-active');
+		}
+
+		function closeWeixinModal() {
+			$weixinModal
+				.removeClass('weixin-modal--open')
+				.attr('aria-hidden', 'true');
+
+			$('body').removeClass('weixin-modal-active');
+
+			$weixinCopyButton
+				.removeClass('weixin-modal__copy--copied')
+				.text(weixinCopyDefaultLabel);
+		}
+
+		function copyWeixinId() {
+			var weixinId = $.trim($weixinModal.find('.weixin-modal__id').text());
+
+			if ( !weixinId ) {
+				return;
+			}
+
+			function showCopiedState() {
+				$weixinCopyButton
+					.addClass('weixin-modal__copy--copied')
+					.text($weixinCopyButton.attr('data-copied-label') || 'Copied');
+			}
+
+			if ( navigator.clipboard && navigator.clipboard.writeText ) {
+				navigator.clipboard.writeText(weixinId).then(showCopiedState);
+				return;
+			}
+
+			var $tempInput = $('<textarea>').val(weixinId).appendTo('body').select();
+
+			try {
+				document.execCommand('copy');
+				showCopiedState();
+			}
+			catch ( error ) {}
+
+			$tempInput.remove();
+		}
+
+		$(document).on('click', '.js-weixin-open', function(event) {
+			event.preventDefault();
+			openWeixinModal();
+		});
+
+		$weixinModal.on('click', '.weixin-modal__overlay, .weixin-modal__close', function() {
+			closeWeixinModal();
+		});
+
+		$weixinModal.on('click', '.js-weixin-copy', function() {
+			copyWeixinId();
+		});
+
+		$weixinModal.on('click', '.weixin-modal__panel', function(event) {
+			event.stopPropagation();
+		});
+
+		$(document).on('keydown', function(event) {
+			if ( event.key === 'Escape' && $weixinModal.hasClass('weixin-modal--open') ) {
+				closeWeixinModal();
+			}
+		});
+	}
+
+
+
 }(jQuery));

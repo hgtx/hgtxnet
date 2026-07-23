@@ -1,0 +1,34 @@
+{% assign weixin = site.data.settings.weixin_settings %}
+{% if site.data.settings.social_settings.weixin_url != '' and weixin %}
+
+<div class="weixin-modal" id="weixin-modal" aria-hidden="true">
+	<div class="weixin-modal__overlay"></div>
+
+	<div class="weixin-modal__panel" role="dialog" aria-modal="true" aria-labelledby="weixin-modal-title">
+		<button type="button" class="weixin-modal__close" aria-label="Close">&times;</button>
+
+		<h2 class="weixin-modal__title" id="weixin-modal-title">{{ weixin.label }}</h2>
+
+		<div class="weixin-modal__desktop">
+			<img
+				class="weixin-modal__qr"
+				src="{{ weixin.qr_image | relative_url }}"
+				alt="{{ weixin.label }}"
+			>
+			<p class="weixin-modal__hint">{{ weixin.desktop_hint }}</p>
+		</div>
+
+		<div class="weixin-modal__mobile">
+			<p class="weixin-modal__id">{{ weixin.id }}</p>
+			<button type="button" class="weixin-modal__copy js-weixin-copy" data-copied-label="{{ weixin.copied_label }}">{{ weixin.copy_label }}</button>
+			<img
+				class="weixin-modal__qr weixin-modal__qr--small"
+				src="{{ weixin.qr_image | relative_url }}"
+				alt="{{ weixin.label }}"
+			>
+			<p class="weixin-modal__hint">{{ weixin.mobile_hint }}</p>
+		</div>
+	</div>
+</div>
+
+{% endif %}
