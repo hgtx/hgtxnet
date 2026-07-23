@@ -1,6 +1,7 @@
 ---
 title: About
 subtitle:
+hide_title: true
 ---
 <div class="bio-layout">
 

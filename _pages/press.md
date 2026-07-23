@@ -1,6 +1,7 @@
 ---
 title: Press
 subtitle:
+hide_title: true
 ---
 <div class="gallery" data-columns="3">
 	<img src="/images/press/2010-09-06.jpg">

@@ -1,6 +1,7 @@
 ---
 title: Contact
 subtitle:
+hide_title: true
 ---
 Email me: <a href="mailto:{{ 'm@hgtx.net' | encode_email }}">{{ 'm@hgtx.net' | html_encode_email }}</a>
 
