@@ -1081,8 +1081,12 @@
 		return $('.page .page__content .cover').length === 0;
 	}
 
+	function isDesktopNavigation() {
+		return window.matchMedia('(min-width: 1024px)').matches;
+	}
+
 	function runSidebarExitAnimation(callback) {
-		if ( !window.matchMedia('(min-width: 1024px)').matches ) {
+		if ( !isDesktopNavigation() ) {
 			if ( callback ) {
 				callback();
 			}
@@ -1565,11 +1569,21 @@
 		}
 
 		if ( hasPageGridGallery() ) {
-			if ( Math.abs(deltaY) > Math.abs(deltaX) && deltaY > 0 ) {
-				navigateToNextProjectFromThumbnails();
-			}
-			else if ( Math.abs(deltaY) > Math.abs(deltaX) && deltaY < 0 ) {
-				navigateToPreviousProjectFromThumbnails();
+			if ( isDesktopNavigation() ) {
+				if ( Math.abs(deltaY) > Math.abs(deltaX) && deltaY > 0 ) {
+					navigateToNextProjectFromThumbnails();
+				}
+				else if ( Math.abs(deltaY) > Math.abs(deltaX) && deltaY < 0 ) {
+					navigateToPreviousProjectFromThumbnails();
+				}
+				else if ( Math.abs(deltaX) >= 50 && Math.abs(deltaX) > Math.abs(deltaY) ) {
+					if ( deltaX < 0 ) {
+						navigateUpHierarchy();
+					}
+					else {
+						openFirstGalleryLightboxFromThumbnails();
+					}
+				}
 			}
 			else if ( Math.abs(deltaX) >= 50 && Math.abs(deltaX) > Math.abs(deltaY) ) {
 				if ( deltaX < 0 ) {
