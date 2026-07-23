@@ -183,3 +183,72 @@
 
 
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Lightbox
+
+.gallery-lightbox {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 10000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 0.25s ease-in-out, visibility 0.25s ease-in-out;
+
+	&--open {
+		opacity: 1;
+		visibility: visible;
+		pointer-events: auto;
+	}
+}
+
+.gallery-lightbox__overlay {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background: hsla(0, 0%, 100%, 0.92);
+	cursor: zoom-out;
+}
+
+.gallery-lightbox__stage {
+	position: relative;
+	z-index: 1;
+	max-width: 95vw;
+	max-height: 95vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.gallery-lightbox__image {
+	display: block;
+	max-width: 95vw;
+	max-height: 95vh;
+	width: auto;
+	height: auto;
+	cursor: zoom-out;
+	box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+	opacity: 0;
+	transition: opacity 0.2s ease-in-out;
+}
+
+.gallery-lightbox--open .gallery-lightbox__image {
+	opacity: 1;
+}
+
+.gallery-lightbox--loading .gallery-lightbox__image {
+	opacity: 0;
+}
+
+body.gallery-lightbox-active {
+	overflow: hidden;
+}
+
+

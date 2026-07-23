@@ -18,6 +18,62 @@
 	var docTitle = document.title;
 	var History = window.History;
 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Gallery lightbox
+
+	var $galleryLightbox = $(
+		'<div class="gallery-lightbox" aria-hidden="true">' +
+			'<div class="gallery-lightbox__overlay"></div>' +
+			'<div class="gallery-lightbox__stage">' +
+				'<img class="gallery-lightbox__image" alt="">' +
+			'</div>' +
+		'</div>'
+	);
+
+	$galleryLightbox.appendTo('body');
+
+	function openGalleryLightbox(imageSrc) {
+		var $image = $galleryLightbox.find('.gallery-lightbox__image');
+
+		$galleryLightbox
+			.addClass('gallery-lightbox--loading')
+			.addClass('gallery-lightbox--open')
+			.attr('aria-hidden', 'false');
+
+		$('body').addClass('gallery-lightbox-active');
+
+		$image.one('load', function() {
+			$galleryLightbox.removeClass('gallery-lightbox--loading');
+		});
+
+		$image.attr('src', imageSrc);
+
+		if ( $image[0].complete ) {
+			$galleryLightbox.removeClass('gallery-lightbox--loading');
+		}
+	}
+
+	function closeGalleryLightbox() {
+		$galleryLightbox
+			.removeClass('gallery-lightbox--open gallery-lightbox--loading')
+			.attr('aria-hidden', 'true');
+
+		$galleryLightbox.find('.gallery-lightbox__image').attr('src', '');
+		$('body').removeClass('gallery-lightbox-active');
+	}
+
+	$(document).on('click', '.gallery--grid .gallery__item__link', function(event) {
+		event.preventDefault();
+		openGalleryLightbox($(this).attr('href'));
+	});
+
+	$(document).on('click', '.gallery-lightbox__overlay, .gallery-lightbox__image', closeGalleryLightbox);
+
+	$(document).on('keydown', function(event) {
+		if ( event.key === 'Escape' ) {
+			closeGalleryLightbox();
+		}
+	});
+
 	// State change event
 	History.Adapter.bind(window,'statechange',function(){
 		var state = History.getState();
@@ -85,7 +141,7 @@
 				window.location = thisTarget;
 			}
 
-			// If link is handled by some JS action – e.g. fluidbox
+			// If link is handled by some JS action – e.g. gallery lightbox
 			else if ( $(this).is('.gallery__item__link') ) {
 				
 				// Let JS handle it
@@ -278,11 +334,6 @@
 					$this.children('.gallery__wrap').masonry({
 						itemSelector: '.gallery__item',
 						transitionDuration: 0
-					});
-							
-					// Init fluidbox
-					$this.find('.gallery__item__link').fluidbox({
-						loader: true
 					});
 
 				}
