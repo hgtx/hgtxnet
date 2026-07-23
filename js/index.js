@@ -1112,7 +1112,7 @@
 	function finishCoverRevealAnimation() {
 		$('body').removeClass('cover-reveal-animating');
 		coverRevealAnimating = false;
-		updateCoverBackground();
+		updateCoverBackground(false);
 	}
 
 	function finishCoverCollapseAnimation($coverImage) {
@@ -1144,6 +1144,7 @@
 
 		coverRevealAnimating = true;
 		$body.removeClass('cover-intro').addClass('cover-reveal-animating');
+		updateCoverBackground(false);
 
 		window.requestAnimationFrame(function() {
 			$body.addClass('cover-revealed');
@@ -1260,7 +1261,11 @@
 		endCoverBackgroundTransition();
 	}
 
-	function updateCoverBackground() {
+	function updateCoverBackground(animated) {
+		if ( animated !== false ) {
+			animated = true;
+		}
+
 		if ( isCoverIntro() ) {
 			resetCoverBackground(false);
 			return;
@@ -1276,11 +1281,11 @@
 		var coverImage = $coverImage[0];
 
 		if ( coverImage.complete && coverImage.naturalWidth ) {
-			applyCoverBackgroundFromImage(coverImage, true);
+			applyCoverBackgroundFromImage(coverImage, animated);
 		}
 		else {
 			$coverImage.one('load error', function() {
-				applyCoverBackgroundFromImage(coverImage, true);
+				applyCoverBackgroundFromImage(coverImage, animated);
 			});
 		}
 	}

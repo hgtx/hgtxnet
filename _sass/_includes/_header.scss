@@ -194,8 +194,8 @@
 	overflow: auto;
 
 	visibility: hidden;
-	opacity: 0;
-	@include transition(all 0.2s ease-in-out);
+	opacity: 1;
+	@include transition(visibility 0s linear 0s);
 
 	@include mq(tabletl) {
 		position: relative;
