@@ -6,7 +6,7 @@
 
 .blog {
 	margin-top: 0;
-	padding: $grid-spacing/2;
+	padding: calc($grid-spacing / 2);
 }
 
 .blog-wrap {
@@ -15,7 +15,7 @@
 
 .blog-post {
 	position: relative;
-	padding: $grid-spacing/2;
+	padding: calc($grid-spacing / 2);
 	float: left;
 	width: 50%;
 }
@@ -93,13 +93,13 @@
 
 .pagination {
 	margin-top: 0;
-	padding: 0 $grid-spacing/2 $grid-spacing;
+	padding: 0 calc($grid-spacing / 2) $grid-spacing;
 }
 
 .pagination__prev,
 .pagination__next {
 	width: 50%;
-	padding: 0 $grid-spacing/2;
+	padding: 0 calc($grid-spacing / 2);
 
 	.button {
 		display: block;

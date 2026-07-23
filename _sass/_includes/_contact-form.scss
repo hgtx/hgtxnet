@@ -4,6 +4,8 @@
 
 // - - - - - - - - - - - - - - - - - -
 
+@use "sass:color";
+
 .contact-form {
 	background: $background-color;
 	margin: 20px auto;
@@ -98,16 +100,16 @@
 }
 
 ::-webkit-input-placeholder {
-	color: lighten($text-light-color,15%);
+	color: color.adjust($text-light-color, $lightness: 15%);
 }
 ::-moz-placeholder {
-	color: lighten($text-light-color,15%);
+	color: color.adjust($text-light-color, $lightness: 15%);
 }
 :-ms-input-placeholder {
-	color: lighten($text-light-color,15%);
+	color: color.adjust($text-light-color, $lightness: 15%);
 }
 :-moz-placeholder {
-	color: lighten($text-light-color,15%);
+	color: color.adjust($text-light-color, $lightness: 15%);
 }
 
 .contact-form__textarea {
