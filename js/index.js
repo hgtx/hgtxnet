@@ -25,7 +25,12 @@
 	}
 
 	function pushPageState(url) {
+		if ( !url || url === 'undefined' ) {
+			return false;
+		}
+
 		History.pushState(null, getSafePageTitle(), url);
+		return true;
 	}
 
 	function getAjaxPageLoadUrl() {
@@ -395,11 +400,12 @@
 
 	function normalizeProjectPath(path) {
 		if ( !path || path === '/' ) {
-			return path || '/';
+			return '/';
 		}
 
-		if ( path.charAt(path.length - 1) !== '/' ) {
-			return path + '/';
+		// GitHub Pages serves project and section URLs without trailing slashes.
+		if ( path.length > 1 && path.charAt(path.length - 1) === '/' ) {
+			return path.slice(0, -1);
 		}
 
 		return path;
@@ -454,7 +460,7 @@
 	function isProjectsListingPage() {
 		var path = normalizeProjectPath(navTarget || window.location.pathname);
 
-		return path === '/projects/' || $('.page__content .portfolio-wrap').length > 0;
+		return path === '/projects' || $('.page__content .portfolio-wrap').length > 0;
 	}
 
 	function isMainMenuPage() {
@@ -535,7 +541,7 @@
 		}
 
 		if ( path.indexOf('/project/') === 0 ) {
-			return '/projects/';
+			return '/projects';
 		}
 
 		return null;
@@ -560,7 +566,7 @@
 
 	function getChildPageUrl() {
 		if ( isCoverPage() ) {
-			return '/projects/';
+			return '/projects';
 		}
 
 		if ( isProjectsListingPage() ) {
@@ -1293,8 +1299,8 @@
 			var linkPath = normalizeProjectPath($(this).attr('href'));
 			var isActive = false;
 
-			if ( linkPath === '/projects/' ) {
-				isActive = currentPath === '/projects/' || currentPath.indexOf('/project/') === 0;
+			if ( linkPath === '/projects' ) {
+				isActive = currentPath === '/projects' || currentPath.indexOf('/project/') === 0;
 			}
 			else {
 				isActive = currentPath === linkPath;
