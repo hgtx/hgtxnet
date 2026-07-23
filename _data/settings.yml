@@ -21,8 +21,9 @@ menu_settings:
       url: '/contact'
 
 cover_settings:
-  image: /images/dog-days/dog-days-05.jpg
+  image: /images/chaparral/chaparral-11.jpg
   alt: HGTX Studio
+  project: chaparral
 
 grid_settings:
   overlay_opacity: .82

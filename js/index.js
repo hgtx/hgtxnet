@@ -511,6 +511,293 @@
 		return true;
 	}
 
+	function randomizeCoverImage(callback) {
+		var $cover = $('.page__content .cover');
+
+		if ( !$cover.length ) {
+			if ( callback ) {
+				callback(false);
+			}
+
+			return;
+		}
+
+		var imagesJson = $cover.attr('data-cover-images');
+		var $coverImage = $cover.find('.cover__image');
+
+		$cover.removeClass('cover--ready');
+
+		if ( !imagesJson ) {
+			$cover.addClass('cover--ready');
+
+			if ( callback ) {
+				callback(true, $coverImage[0]);
+			}
+
+			return;
+		}
+
+		var images;
+
+		try {
+			images = JSON.parse(imagesJson);
+		}
+		catch ( error ) {
+			$cover.addClass('cover--ready');
+
+			if ( callback ) {
+				callback(true, $coverImage[0]);
+			}
+
+			return;
+		}
+
+		if ( !images.length ) {
+			$cover.addClass('cover--ready');
+
+			if ( callback ) {
+				callback(true, $coverImage[0]);
+			}
+
+			return;
+		}
+
+		var image = images[Math.floor(Math.random() * images.length)];
+		var preload = new Image();
+
+		preload.onload = preload.onerror = function() {
+			$coverImage.attr('src', image);
+
+			requestAnimationFrame(function() {
+				$cover.addClass('cover--ready');
+
+				if ( callback ) {
+					callback(true, $coverImage[0]);
+				}
+			});
+		};
+
+		preload.src = image;
+	}
+
+	function revealPageContent() {
+		// Portfolio grid layout
+		$('.portfolio-wrap').imagesLoaded( function() {
+			$('.portfolio-wrap').masonry({
+				itemSelector: '.portfolio-item',
+				transitionDuration: 0
+			});
+		});
+
+		// Blog grid layout
+		$('.blog-wrap').imagesLoaded( function() {
+			$('.blog-wrap').masonry({
+				itemSelector: '.blog-post',
+				transitionDuration: 0
+			});
+		});
+
+		$('body').removeClass('loading is-cover-page menu--open');
+	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Cover background
+
+	var coverBackgroundDuration = 600;
+	var coverBackgroundTimer = null;
+
+	function clearCoverBackgroundTimer() {
+		if ( coverBackgroundTimer ) {
+			clearTimeout(coverBackgroundTimer);
+			coverBackgroundTimer = null;
+		}
+	}
+
+	function forceCoverBackgroundReflow(element) {
+		return element.offsetHeight;
+	}
+
+	function beginCoverBackgroundTransition() {
+		$('body').addClass('cover-background-transition');
+	}
+
+	function endCoverBackgroundTransition(callback) {
+		coverBackgroundTimer = setTimeout(function() {
+			coverBackgroundTimer = null;
+			$('body').removeClass('cover-background-transition');
+
+			if ( callback ) {
+				callback();
+			}
+		}, coverBackgroundDuration);
+	}
+
+	function getDominantColorFromImage(img) {
+		try {
+			var canvas = document.createElement('canvas');
+			var sampleSize = 32;
+			var cropScale = 0.5;
+			var sourceWidth = img.naturalWidth;
+			var sourceHeight = img.naturalHeight;
+			var cropWidth = sourceWidth * cropScale;
+			var cropHeight = sourceHeight * cropScale;
+			var cropX = (sourceWidth - cropWidth) / 2;
+			var cropY = (sourceHeight - cropHeight) / 2;
+
+			canvas.width = sampleSize;
+			canvas.height = sampleSize;
+
+			var context = canvas.getContext('2d');
+
+			context.drawImage(
+				img,
+				cropX,
+				cropY,
+				cropWidth,
+				cropHeight,
+				0,
+				0,
+				sampleSize,
+				sampleSize
+			);
+
+			var pixels = context.getImageData(0, 0, sampleSize, sampleSize).data;
+			var redTotal = 0;
+			var greenTotal = 0;
+			var blueTotal = 0;
+			var count = 0;
+
+			for ( var i = 0; i < pixels.length; i += 4 ) {
+				if ( pixels[i + 3] < 125 ) {
+					continue;
+				}
+
+				if ( pixels[i] > 245 && pixels[i + 1] > 245 && pixels[i + 2] > 245 ) {
+					continue;
+				}
+
+				redTotal += pixels[i];
+				greenTotal += pixels[i + 1];
+				blueTotal += pixels[i + 2];
+				count++;
+			}
+
+			if ( !count ) {
+				return null;
+			}
+
+			return {
+				r: Math.round(redTotal / count),
+				g: Math.round(greenTotal / count),
+				b: Math.round(blueTotal / count)
+			};
+		}
+		catch ( error ) {
+			return null;
+		}
+	}
+
+	function softenCoverBackgroundColor(color) {
+		var mix = 0.35;
+
+		return {
+			r: Math.round(color.r * mix + 255 * (1 - mix)),
+			g: Math.round(color.g * mix + 255 * (1 - mix)),
+			b: Math.round(color.b * mix + 255 * (1 - mix))
+		};
+	}
+
+	function colorToRgbString(color) {
+		return 'rgb(' + color.r + ', ' + color.g + ', ' + color.b + ')';
+	}
+
+	function resetCoverBackground(animated) {
+		var $body = $('body');
+
+		if ( animated && $body.hasClass('cover-page-active') ) {
+			clearCoverBackgroundTimer();
+			beginCoverBackgroundTransition();
+			$body.css('background-color', '#ffffff');
+
+			endCoverBackgroundTransition(function() {
+				$body
+					.removeClass('cover-page-active')
+					.css('background-color', '');
+			});
+
+			return;
+		}
+
+		if ( coverBackgroundTimer ) {
+			return;
+		}
+
+		$body
+			.removeClass('cover-page-active cover-background-transition')
+			.css('background-color', '');
+	}
+
+	function applyCoverBackgroundFromImage(img, animated) {
+		if ( !img || !img.complete || !img.naturalWidth ) {
+			resetCoverBackground(false);
+			return;
+		}
+
+		var dominantColor = getDominantColorFromImage(img);
+
+		if ( !dominantColor ) {
+			resetCoverBackground(false);
+			return;
+		}
+
+		var backgroundColor = softenCoverBackgroundColor(dominantColor);
+		var tint = colorToRgbString(backgroundColor);
+		var $body = $('body');
+
+		clearCoverBackgroundTimer();
+		$body.addClass('cover-page-active');
+
+		if ( animated === false ) {
+			$body.css('background-color', tint);
+			return;
+		}
+
+		beginCoverBackgroundTransition();
+		$body.css('background-color', '#ffffff');
+		forceCoverBackgroundReflow($body[0]);
+		$body.css('background-color', tint);
+
+		endCoverBackgroundTransition();
+	}
+
+	function updateCoverBackground() {
+		var $coverImage = $('.page__content .cover__image');
+
+		if ( !$coverImage.length ) {
+			resetCoverBackground(false);
+			return;
+		}
+
+		var coverImage = $coverImage[0];
+
+		if ( coverImage.complete && coverImage.naturalWidth ) {
+			applyCoverBackgroundFromImage(coverImage, true);
+		}
+		else {
+			$coverImage.one('load error', function() {
+				applyCoverBackgroundFromImage(coverImage, true);
+			});
+		}
+	}
+
+	function fadeCoverBackgroundOnLeave() {
+		var newPath = normalizeProjectPath(window.location.pathname);
+		var leavingCover = $('.page__content .cover').length > 0 && newPath !== '/';
+
+		if ( leavingCover ) {
+			resetCoverBackground(true);
+		}
+	}
+
 	function updateActiveLinks() {
 		var currentPath = normalizeProjectPath(navTarget || window.location.pathname);
 
@@ -804,6 +1091,8 @@
 		var state = History.getState();
 		// console.log(state);
 
+		fadeCoverBackgroundOnLeave();
+
 		// Loading state
 		$('body').addClass('loading');
 
@@ -811,9 +1100,7 @@
 		$('.page-loader').load( state.hash + ' .page__content', function() {
 
 			// Scroll to top
-			$( 'body, html' ).animate({
-				scrollTop: 0
-			}, 300);
+			$( 'body, html' ).scrollTop(0);
 
 			// Find transition time
 			var transitionTime = 400;
@@ -899,37 +1186,31 @@
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Page load
 
 	function pageFunctions() {
+		var $cover = $('.page__content .cover');
 
+		if ( $cover.length ) {
+			$('body').addClass('is-cover-page');
+			$('.page').addClass('page--cover');
 
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Show content
+			randomizeCoverImage(function(success, coverImage) {
+				if ( !success || !coverImage ) {
+					revealPageContent();
+					return;
+				}
 
-		// Wait until first image has loaded
-		$('.page__content').find('img:first').imagesLoaded( function() {
-	
-			// Portfolio grid layout
-			$('.portfolio-wrap').imagesLoaded( function() {
-				$('.portfolio-wrap').masonry({
-					itemSelector: '.portfolio-item',
-					transitionDuration: 0
+				$(coverImage).imagesLoaded(function() {
+					updateCoverBackground();
+					revealPageContent();
 				});
 			});
+		}
+		else {
+			$('.page').removeClass('page--cover');
 
-			// Blog grid layout
-			$('.blog-wrap').imagesLoaded( function() {
-				$('.blog-wrap').masonry({
-					itemSelector: '.blog-post',
-					transitionDuration: 0
-				});
+			$('.page__content').find('img:first').imagesLoaded(function() {
+				revealPageContent();
 			});
-
-			// Show the content
-			$('body').removeClass('loading');
-
-			// Hide the menu
-			$('body').removeClass('menu--open');
-		});
-
-
+		}
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Active links
 
@@ -942,6 +1223,10 @@
 		}
 		else {
 			$('.projects-menu').removeClass('projects-menu--visible');
+		}
+
+		if ( !$cover.length ) {
+			updateCoverBackground();
 		}
 
 

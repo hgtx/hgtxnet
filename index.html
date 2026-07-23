@@ -5,7 +5,29 @@ description: Selected works by artist Hugo Teixeira
 featured_image: /images/social.jpg
 ---
 
-<section class="cover">
+<section class="cover" data-cover-images="[
+{%- assign cover_settings = site.data.settings.cover_settings -%}
+{%- assign cover_images = cover_settings.images -%}
+{%- assign cover_project_slug = cover_settings.project -%}
+{%- if cover_images -%}
+{%- for image in cover_images -%}
+&quot;{{ image | relative_url }}&quot;{% unless forloop.last %},{% endunless %}
+{%- endfor -%}
+{%- elsif cover_project_slug -%}
+{%- assign cover_project = site.projects | where: "slug", cover_project_slug | first -%}
+{%- if cover_project -%}
+{%- assign gallery_parts = cover_project.content | split: '<img src="' -%}
+{%- for part in gallery_parts offset: 1 -%}
+{%- assign image_src = part | split: '"' | first -%}
+&quot;{{ image_src | relative_url }}&quot;{% unless forloop.last %},{% endunless %}
+{%- endfor -%}
+{%- endif -%}
+{%- else -%}
+{%- for project in site.projects reversed -%}
+&quot;{{ project.featured_image | relative_url }}&quot;{% unless forloop.last %},{% endunless %}
+{%- endfor -%}
+{%- endif -%}
+]">
 
 	<img
 		class="cover__image"
