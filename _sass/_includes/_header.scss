@@ -253,10 +253,11 @@
 	}
 	
 	&.active-link {
-		color: $overlay-accent-color;
+		color: $text-light-color;
+		font-size: 1.12em;
 
 		@include mq(tabletl) {
-			color: $accent-color;
+			color: $text-medium-color;
 		}
 	}
 }

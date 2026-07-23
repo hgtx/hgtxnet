@@ -39,6 +39,30 @@
 		}
 	}
 
+	&--project {
+
+		.wrap {
+
+			@include mq(tabletl) {
+				max-width: 100%;
+			}
+		}
+
+		h1 {
+			font-size: 16px;
+			letter-spacing: 0;
+
+			@include mq(tabletp) {
+				font-size: 20px;
+				white-space: nowrap;
+			}
+
+			@include mq(laptop) {
+				font-size: 22px;
+			}
+		}
+	}
+
 	p {
 
 	}

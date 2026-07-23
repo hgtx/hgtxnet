@@ -511,6 +511,36 @@
 		return true;
 	}
 
+	function updateActiveLinks() {
+		var currentPath = normalizeProjectPath(navTarget || window.location.pathname);
+
+		$('.active-link').removeClass('active-link');
+
+		$('.menu .menu__list__item__link').each(function() {
+			var linkPath = normalizeProjectPath($(this).attr('href'));
+			var isActive = false;
+
+			if ( linkPath === '/projects/' ) {
+				isActive = currentPath === '/projects/' || currentPath.indexOf('/project/') === 0;
+			}
+			else {
+				isActive = currentPath === linkPath;
+			}
+
+			if ( isActive ) {
+				$(this).addClass('active-link');
+			}
+		});
+
+		if ( currentPath.indexOf('/project/') === 0 ) {
+			$('.projects-menu .menu__list__item__link').each(function() {
+				if ( normalizeProjectPath($(this).attr('href')) === currentPath ) {
+					$(this).addClass('active-link');
+				}
+			});
+		}
+	}
+
 	function openFirstGalleryLightboxFromThumbnails() {
 		if ( galleryLightboxAnimating || isGalleryLightboxOpen() ) {
 			return false;
@@ -904,8 +934,7 @@
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Active links
 
 		// Switch active link states
-		$('.active-link').removeClass('active-link');
-		$('a[href="' + navTarget + '"]').addClass('active-link');
+		updateActiveLinks();
 
 		// Show project list only on Projects pages
 		if ( navTarget === '/projects/' || navTarget === '/projects' || navTarget.indexOf('/project/') === 0 ) {
