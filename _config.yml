@@ -48,10 +48,14 @@ sass:
   style: compressed
 
 plugins:
-  - jekyll-paginate
+  - jekyll-paginate-v2
   - jekyll-sitemap
   - jekyll-email-protect
 
-paginate: 6
-paginate_path: "/blog/page:num/"
-  
+pagination:
+  enabled: true
+  per_page: 6
+  permalink: '/blog/page/:num/'
+  sort_field: 'date'
+  sort_reverse: true
+
