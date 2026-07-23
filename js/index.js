@@ -1462,6 +1462,10 @@
 	});
 
 	$(document).on('click', '.cover-intro .cover', function(event) {
+		if ( !isDesktopNavigation() ) {
+			return;
+		}
+
 		event.preventDefault();
 		revealCoverLayout(true);
 	});
@@ -1488,6 +1492,10 @@
 				navigateGalleryLightbox(1);
 			}
 
+			return;
+		}
+
+		if ( !isDesktopNavigation() ) {
 			return;
 		}
 
@@ -1536,7 +1544,7 @@
 	});
 
 	$(document).on('touchstart', '.page__content', function(event) {
-		if ( isGalleryLightboxOpen() ) {
+		if ( !isDesktopNavigation() || isGalleryLightboxOpen() ) {
 			return;
 		}
 
@@ -1547,7 +1555,7 @@
 	});
 
 	$(document).on('touchend', '.page__content', function(event) {
-		if ( isGalleryLightboxOpen() ) {
+		if ( !isDesktopNavigation() || isGalleryLightboxOpen() ) {
 			return;
 		}
 
@@ -1746,6 +1754,10 @@
 
 		$(document).on('click', 'a', function (event){
 
+			if ( !isDesktopNavigation() ) {
+				return;
+			}
+
 			// Don't follow link
 			event.preventDefault();
 
@@ -1801,13 +1813,24 @@
 		var $cover = $('.page__content .cover');
 
 		if ( $cover.length ) {
-			$('body')
-				.addClass('is-cover-page cover-intro')
-				.removeClass('cover-revealed cover-reveal-animating');
-
-			coverRevealed = false;
-			coverRevealAnimating = false;
 			$('.page').addClass('page--cover');
+
+			if ( isDesktopNavigation() ) {
+				$('body')
+					.addClass('is-cover-page cover-intro')
+					.removeClass('cover-revealed cover-reveal-animating');
+
+				coverRevealed = false;
+				coverRevealAnimating = false;
+			}
+			else {
+				$('body')
+					.addClass('is-cover-page')
+					.removeClass('cover-intro cover-revealed cover-reveal-animating');
+
+				coverRevealed = false;
+				coverRevealAnimating = false;
+			}
 
 			randomizeCoverImage(function(success, coverImage) {
 				if ( !success || !coverImage ) {
@@ -1817,7 +1840,14 @@
 
 				$(coverImage).imagesLoaded(function() {
 					updateCoverBrandingColor(coverImage);
-					updateCoverBackground();
+
+					if ( isDesktopNavigation() ) {
+						updateCoverBackground();
+					}
+					else {
+						resetCoverBackground(false);
+					}
+
 					revealPageContent();
 				});
 			});

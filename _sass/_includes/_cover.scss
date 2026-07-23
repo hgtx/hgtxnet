@@ -30,6 +30,12 @@ $cover-layout-duration: 0.6s;
 	transition: left $cover-layout-duration $cover-fade-easing;
 }
 
+body.is-cover-page:not(.cover-intro):not(.cover-revealed) {
+	.cover-branding {
+		display: none;
+	}
+}
+
 body.cover-background-transition {
 	transition: background-color 0.6s ease;
 }
