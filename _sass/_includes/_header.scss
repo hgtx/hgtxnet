@@ -278,14 +278,18 @@
 
 .projects-menu {
 	display: none;
-	
+
 	@include mq(tabletl) {
-		display: block;
-		margin-top: 20px;
+		&.projects-menu--visible {
+			display: block;
+			margin-top: 20px;
+		}
 	}
 
 	@include mq(laptop) {
-		margin-top: 30px;
+		&.projects-menu--visible {
+			margin-top: 30px;
+		}
 	}
 }
 

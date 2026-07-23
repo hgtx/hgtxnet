@@ -515,6 +515,14 @@
 		$('.active-link').removeClass('active-link');
 		$('a[href="' + navTarget + '"]').addClass('active-link');
 
+		// Show project list only on Projects pages
+		if ( navTarget === '/' || navTarget.indexOf('/project/') === 0 ) {
+			$('.projects-menu').addClass('projects-menu--visible');
+		}
+		else {
+			$('.projects-menu').removeClass('projects-menu--visible');
+		}
+
 
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Galleries
