@@ -61,6 +61,7 @@
 	letter-spacing: $sitetitle-spacing;
 	line-height: 1;
 	color: $text-dark-color;
+	white-space: nowrap;
 
 	&:hover {
 		color: $accent-color;
@@ -278,6 +279,10 @@
 
 .projects-menu {
 	display: none;
+
+	.menu__list__item__link {
+		white-space: nowrap;
+	}
 
 	@include mq(tabletl) {
 		&.projects-menu--visible {
