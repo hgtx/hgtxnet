@@ -399,6 +399,10 @@
 			return false;
 		}
 
+		return hasPageGridGallery();
+	}
+
+	function hasPageGridGallery() {
 		return $('.page__content .gallery--grid .gallery__item__link').length > 0;
 	}
 
@@ -903,6 +907,15 @@
 		});
 	}
 
+	function closeLightboxOrNextProject() {
+		if ( isProjectGalleryPage() ) {
+			navigateToNextProject();
+		}
+		else {
+			closeGalleryLightbox(true);
+		}
+	}
+
 	$(document).on('click', '.gallery--grid .gallery__item__link', function(event) {
 		event.preventDefault();
 		openGalleryLightbox($(this).attr('href'), $(this));
@@ -942,7 +955,7 @@
 			closeGalleryLightbox(true);
 		}
 		else if ( Math.abs(deltaY) > Math.abs(deltaX) && deltaY > 0 ) {
-			navigateToNextProject();
+			closeLightboxOrNextProject();
 		}
 		else if ( Math.abs(deltaX) >= 50 ) {
 			if ( deltaX < 0 ) {
@@ -969,7 +982,7 @@
 			}
 			else if ( event.key === 'ArrowDown' ) {
 				event.preventDefault();
-				navigateToNextProject();
+				closeLightboxOrNextProject();
 			}
 			else if ( event.key === 'ArrowLeft' ) {
 				event.preventDefault();
@@ -986,8 +999,13 @@
 		if ( event.key === 'ArrowLeft' && navigateUpHierarchy() ) {
 			event.preventDefault();
 		}
-		else if ( event.key === 'ArrowRight' && navigateDownHierarchy() ) {
-			event.preventDefault();
+		else if ( event.key === 'ArrowRight' ) {
+			if ( navigateDownHierarchy() ) {
+				event.preventDefault();
+			}
+			else if ( hasPageGridGallery() && openFirstGalleryLightboxFromThumbnails() ) {
+				event.preventDefault();
+			}
 		}
 		else if ( isMainNavigationContext() ) {
 			if ( event.key === 'ArrowDown' && navigateMainPage(1) ) {
@@ -1010,16 +1028,18 @@
 		}
 	});
 
-	$(document).on('touchstart', '.page__content .gallery--grid', function(event) {
+	$(document).on('touchstart', '.page__content', function(event) {
 		if ( isGalleryLightboxOpen() ) {
 			return;
 		}
 
 		galleryThumbTouchStartX = event.originalEvent.touches[0].clientX;
 		galleryThumbTouchStartY = event.originalEvent.touches[0].clientY;
+		portfolioTouchStartX = galleryThumbTouchStartX;
+		portfolioTouchStartY = galleryThumbTouchStartY;
 	});
 
-	$(document).on('touchend', '.page__content .gallery--grid', function(event) {
+	$(document).on('touchend', '.page__content', function(event) {
 		if ( isGalleryLightboxOpen() ) {
 			return;
 		}
@@ -1033,40 +1053,31 @@
 			return;
 		}
 
-		if ( Math.abs(deltaY) > Math.abs(deltaX) && deltaY > 0 ) {
-			navigateToNextProjectFromThumbnails();
-		}
-		else if ( Math.abs(deltaY) > Math.abs(deltaX) && deltaY < 0 ) {
-			navigateToPreviousProjectFromThumbnails();
-		}
-		else if ( Math.abs(deltaX) >= 50 && Math.abs(deltaX) > Math.abs(deltaY) ) {
-			if ( deltaX < 0 ) {
-				navigateUpHierarchy();
+		if ( hasPageGridGallery() ) {
+			if ( Math.abs(deltaY) > Math.abs(deltaX) && deltaY > 0 ) {
+				navigateToNextProjectFromThumbnails();
 			}
-			else {
-				openFirstGalleryLightboxFromThumbnails();
+			else if ( Math.abs(deltaY) > Math.abs(deltaX) && deltaY < 0 ) {
+				navigateToPreviousProjectFromThumbnails();
 			}
-		}
-	});
+			else if ( Math.abs(deltaX) >= 50 && Math.abs(deltaX) > Math.abs(deltaY) ) {
+				if ( deltaX < 0 ) {
+					navigateUpHierarchy();
+				}
+				else {
+					openFirstGalleryLightboxFromThumbnails();
+				}
+			}
 
-	$(document).on('touchstart', '.page__content', function(event) {
-		if ( isGalleryLightboxOpen() || isProjectGalleryPage() || !isMainNavigationContext() ) {
 			return;
 		}
 
-		portfolioTouchStartX = event.originalEvent.touches[0].clientX;
-		portfolioTouchStartY = event.originalEvent.touches[0].clientY;
-	});
-
-	$(document).on('touchend', '.page__content', function(event) {
-		if ( isGalleryLightboxOpen() || isProjectGalleryPage() || !isMainNavigationContext() ) {
+		if ( !isMainNavigationContext() ) {
 			return;
 		}
 
-		var touchEndX = event.originalEvent.changedTouches[0].clientX;
-		var touchEndY = event.originalEvent.changedTouches[0].clientY;
-		var deltaX = touchEndX - portfolioTouchStartX;
-		var deltaY = touchEndY - portfolioTouchStartY;
+		deltaX = touchEndX - portfolioTouchStartX;
+		deltaY = touchEndY - portfolioTouchStartY;
 
 		if ( Math.abs(deltaX) < 50 && Math.abs(deltaY) < 50 ) {
 			return;
