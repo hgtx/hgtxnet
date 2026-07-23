@@ -37,6 +37,14 @@
 		return window.location.pathname;
 	}
 
+	function getCurrentLoadedPagePath() {
+		return normalizeProjectPath($('body').attr('data-page-url') || window.location.pathname);
+	}
+
+	function shouldSkipAjaxPageLoad(loadUrl) {
+		return normalizeProjectPath(loadUrl) === getCurrentLoadedPagePath() && $('.page .page__content').length > 0;
+	}
+
 	function extractPageContentFromHtml(html) {
 		var $parsed = $('<div>').append($.parseHTML(html, document, true));
 
@@ -1640,7 +1648,6 @@
 	});
 
 	// State change event
-	var skipInitialStateChange = true;
 	var pageLoadRequestId = 0;
 
 	function hasLoadedPageContent($loader) {
@@ -1648,13 +1655,13 @@
 	}
 
 	History.Adapter.bind(window,'statechange',function(){
-		if ( skipInitialStateChange ) {
-			skipInitialStateChange = false;
+		var loadUrl = getAjaxPageLoadUrl();
+
+		if ( shouldSkipAjaxPageLoad(loadUrl) ) {
 			return;
 		}
 
 		var navigatingToCoverIntro = isNavigatingToCoverIntro();
-		var loadUrl = getAjaxPageLoadUrl();
 		var thisRequestId = ++pageLoadRequestId;
 		var $pageLoader = $('.page-loader');
 
