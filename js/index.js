@@ -1225,7 +1225,10 @@
 
 		$body
 			.removeClass('cover-page-active cover-background-transition')
-			.css('background-color', '');
+			.css({
+				'background-color': '',
+				'--cover-tint-rgb': ''
+			});
 	}
 
 	function applyCoverBackgroundFromImage(img, animated) {
@@ -1247,6 +1250,7 @@
 
 		clearCoverBackgroundTimer();
 		$body.addClass('cover-page-active');
+		$body.css('--cover-tint-rgb', backgroundColor.r + ', ' + backgroundColor.g + ', ' + backgroundColor.b);
 
 		if ( animated === false ) {
 			$body.css('background-color', tint);
@@ -1840,14 +1844,7 @@
 
 				$(coverImage).imagesLoaded(function() {
 					updateCoverBrandingColor(coverImage);
-
-					if ( isDesktopNavigation() ) {
-						updateCoverBackground();
-					}
-					else {
-						resetCoverBackground(false);
-					}
-
+					updateCoverBackground(isDesktopNavigation());
 					revealPageContent();
 				});
 			});

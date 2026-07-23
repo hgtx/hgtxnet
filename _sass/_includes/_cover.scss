@@ -34,6 +34,12 @@ body.is-cover-page:not(.cover-intro):not(.cover-revealed) {
 	.cover-branding {
 		display: none;
 	}
+
+	@media only screen and (max-width: 1023px) {
+		.header {
+			background: transparent;
+		}
+	}
 }
 
 body.cover-background-transition {

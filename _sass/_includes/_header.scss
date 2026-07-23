@@ -162,7 +162,7 @@
 .menu--open .menu__toggle__icon {
 
 	span:before, span:after {
-		background: $overlay-text-color !important;
+		background: $text-dark-color !important;
 	}
 		
 	span {
@@ -190,7 +190,8 @@
 	right: 0;
 	bottom: 0;
 	left: 0;
-	background: rgba($overlay-background-color,0.95);
+	background: rgba(245, 247, 250, 0.88);
+	background: rgba(var(--cover-tint-rgb, 245, 247, 250), 0.88);
 	overflow: auto;
 
 	visibility: hidden;
@@ -234,11 +235,11 @@
 .menu__list__item__link {
 	font-size: $menu-small;
 	font-weight: $menu-weight;
-	color: $overlay-text-color;
+	color: $text-dark-color;
 	padding: 10px 0;
 
 	&:hover {
-		color: $text-light-color;
+		color: $text-medium-color;
 	}
 
 	@include mq(tabletl) {
@@ -256,7 +257,7 @@
 	}
 	
 	&.active-link {
-		color: $text-light-color;
+		color: $text-medium-color;
 		font-size: 1.12em;
 
 		@include mq(tabletl) {
